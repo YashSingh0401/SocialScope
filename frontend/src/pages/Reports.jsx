@@ -41,7 +41,7 @@ export default function Reports({ alertsData, preselectedAlertId }) {
       setReport({
         markdown: `# 🛡 SOCIALSCOPE EXECUTIVE INTELLIGENCE BRIEF
 **Reference ID**: \`${selectedAlertId}\`  
-**Classification**: **STRICTLY CONFIDENTIAL // NTRO CYBER INTELLIGENCE // SIH26152**  
+**Classification**: **ENTERPRISE CONFIDENTIAL // SOCIAL INTELLIGENCE OPERATIONS**  
 **Generated Timestamp**: \`${new Date().toISOString()}\`  
 **Target Subject**: ${alertName}  
 
@@ -75,7 +75,7 @@ export default function Reports({ alertsData, preselectedAlertId }) {
 ## 4. Recommended Tactical Interventions
 1. **Official Counter-Telemetry**: Coordinate with State Transmission Authority to push verified real-time grid metrics (49.98 Hz operating frequency).
 2. **Channel Containment**: Issue advisory to regional Telegram channel admins regarding identified bot copypasta scripts.
-3. **Forensic Archival**: Retain signed hash artifacts for permanent SIH26152 evidentiary record.
+3. **Forensic Archival**: Retain signed hash artifacts for permanent operational evidentiary record.
 
 ---
 **Chain-of-Custody Verification SHA-256**:  
@@ -102,7 +102,7 @@ export default function Reports({ alertsData, preselectedAlertId }) {
     const activeAlert = alertList.find((a) => a.alert_id === selectedAlertId) || alertList[0];
     const exportData = {
       dossier_id: selectedAlertId,
-      classification: 'CONFIDENTIAL // NTRO SIH26152',
+      classification: 'CONFIDENTIAL // SOCIALSCOPE OPERATIONS',
       generated_at: new Date().toISOString(),
       alert: activeAlert,
       report_text: report?.markdown
@@ -173,7 +173,7 @@ export default function Reports({ alertsData, preselectedAlertId }) {
       {/* Formal Rendered Intelligence Brief Document */}
       <article className="panel report-viewer-panel">
         <div className="brief-classification-banner">
-          TOP SECRET // NTRO CYBER INTELLIGENCE // SIH26152 // STRICT COMPLIANCE
+          CONFIDENTIAL // SOCIALSCOPE OPERATIONS BRIEF // REAL-TIME SOCIAL INTELLIGENCE
         </div>
 
         <div className="brief-body">
@@ -184,8 +184,8 @@ export default function Reports({ alertsData, preselectedAlertId }) {
 
         <div className="brief-footer-seal">
           <div className="seal-text">
-            <strong>NATIONAL TECHNICAL RESEARCH ORGANISATION (NTRO)</strong>
-            <small>Smart India Hackathon Problem Statement SIH26152 Automated Analytical Summary</small>
+            <strong>SOCIALSCOPE ENTERPRISE INTELLIGENCE</strong>
+            <small>Automated Executive Briefing & Multi-Signal Operations Synthesis</small>
           </div>
           <div className="seal-status">
             CRYPTOGRAPHICALLY SIGNED

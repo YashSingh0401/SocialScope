@@ -15,7 +15,7 @@ def main():
     port = str(args.port)
 
     print("\n" + "=" * 72)
-    print("  SocialScope Intelligence Platform (NTRO / SIH26152)")
+    print("  SocialScope — Real-Time Social Intelligence & Operations Platform")
     print(f"  Dashboard & API: http://{args.host}:{port}")
     print(f"  Health Check:    http://{args.host}:{port}/health")
     print("=" * 72)

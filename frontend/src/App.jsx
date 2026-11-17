@@ -575,7 +575,7 @@ export default function App() {
 
           <footer className="app-footer">
             <div className="footer-content">
-              <strong>SOCIALSCOPE NTRO DEFENSE PLATFORM</strong>
+              <strong>SOCIALSCOPE ENTERPRISE INTELLIGENCE & OPERATIONS PLATFORM</strong>
               <p>
                 Strict explainability protocol: Model outputs reflect probabilistic inferences, not verified ground truth.
                 All algorithmic attribution flags must be cross-verified through human analyst adjudication.

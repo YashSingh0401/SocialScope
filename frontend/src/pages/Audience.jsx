@@ -79,7 +79,7 @@ export default function Audience({ sampleAudience }) {
         <div className="disclaimer-text">
           <div className="disclaimer-title">DEFENSIBLE AGGREGATE DEMOGRAPHICS & GEOGRAPHY</div>
           <p>
-            Under NTRO intelligence standards, observed technical telemetry (platform source, timestamps) is strictly partitioned from probabilistic inferences (regional linguistic dialect heuristics). No invasive profiling is performed.
+            Under strict data privacy & compliance standards, observed technical telemetry (platform source, timestamps) is strictly partitioned from probabilistic inferences (regional linguistic dialect heuristics). No invasive profiling is performed.
           </p>
         </div>
       </div>
@@ -252,7 +252,7 @@ export default function Audience({ sampleAudience }) {
             <div className="confidence-tile highlight">
               <span className="confidence-title">Audit Status</span>
               <strong className="confidence-number text-emerald">PASSED</strong>
-              <small>Adheres to Smart India Hackathon PS SIH26152 explainability</small>
+              <small>Adheres to enterprise transparency and defensible attribution standards</small>
             </div>
           </div>
         </article>

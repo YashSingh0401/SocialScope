@@ -43,9 +43,9 @@ export default function Sidebar({ activePage, setActivePage, alertsCount = 0, sp
           <div className="brand-text">
             <div className="brand-title-row">
               <span className="brand-title">SocialScope</span>
-              <span className="intel-pill">NTRO</span>
+              <span className="intel-pill">PRO</span>
             </div>
-            <span className="brand-sub">SIH26152 Intel Console</span>
+            <span className="brand-sub">Social Operations & Intelligence</span>
           </div>
         </div>
       </div>
