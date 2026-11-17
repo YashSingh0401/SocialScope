@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-11-17T19:07:53Z",
+  "nlp_evaluation": {
+    "total_samples": 12,
+    "language_accuracy": 0.9167,
+    "sentiment_accuracy": 0.9167,
+    "sentiment_macro_f1": 0.9524,
+    "language_slices": {
+      "en": {
+        "sample_count": 6,
+        "accuracy": 1.0
+      },
+      "hi": {
+        "sample_count": 6,
+        "accuracy": 0.8333
+      }
+    },
+    "confusion_matrix": {
+      "negative": {
+        "negative": 4,
+        "neutral": 0,
+        "positive": 0,
+        "unavailable": 0
+      },
+      "neutral": {
+        "negative": 0,
+        "neutral": 4,
+        "positive": 0,
+        "unavailable": 0
+      },
+      "positive": {
+        "negative": 0,
+        "neutral": 0,
+        "positive": 3,
+        "unavailable": 1
+      }
+    },
+    "mean_latency_ms": 35.96,
+    "p95_latency_ms": 2984.93,
+    "total_entities_extracted": 0,
+    "emotion_distribution": {
+      "joy": 3,
+      "anger": 4,
+      "neutral": 5
+    }
+  },
+  "topic_clustering_evaluation": {
+    "status": "fewer_than_two_clusters",
+    "num_clusters": 1,
+    "silhouette_score": null,
+    "davies_bouldin_score": null
+  },
+  "trend_detection_evaluation": {
+    "total_periods": 6,
+    "flagged_spikes_count": 1,
+    "flagged_indices": [
+      3
+    ],
+    "baseline_rmse": 18.8692,
+    "spike_precision": 1.0,
+    "spike_recall": 0.5,
+    "spike_f1": 0.6667
+  },
+  "governance": {
+    "hardware": "CPU Local Execution",
+    "quantization": "ONNX INT8 dynamic",
+    "explainability": "Probabilistic model output; strict attribution rules enforced"
+  }
+}
