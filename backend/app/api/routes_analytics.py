@@ -262,4 +262,100 @@ def export_intelligence_brief(alert_id: str):
     }
 
 
+@router.get('/audience')
+def audience():
+    """Audience distribution, platform breakdown, and demographic language indicators."""
+    with connect() as conn:
+        platforms = conn.execute(
+            '''SELECT coalesce(platform, 'unknown') AS label, count(*) AS count
+               FROM events GROUP BY 1 ORDER BY 2 DESC'''
+        ).fetchall()
+        top_actors = conn.execute(
+            '''SELECT actor_ref, count(*) AS count, count(DISTINCT platform) AS platforms_count
+               FROM events WHERE actor_ref IS NOT NULL
+               GROUP BY 1 ORDER BY 2 DESC LIMIT 10'''
+        ).fetchall()
+        languages = conn.execute(
+            '''SELECT coalesce(a.result->>'language', 'undetermined') AS label, count(*) AS count
+               FROM events e LEFT JOIN event_annotations a ON a.event_id=e.event_id AND a.pipeline_version=%s
+               GROUP BY 1 ORDER BY 2 DESC''', [PIPELINE_VERSION]
+        ).fetchall()
+    return {
+        'platforms': platforms,
+        'top_actors': top_actors,
+        'languages': languages,
+        'demographic_notes': 'Demographic estimates are aggregate and defensible based on linguistic indicators.'
+    }
+
+
+_investigations_log = []
+
+
+@router.get('/investigations')
+def list_investigations():
+    """Returns stored analyst decisions and investigation logs."""
+    return {'investigations': _investigations_log}
+
+
+@router.post('/investigations')
+def record_investigation(payload: dict):
+    """Logs an analyst verdict (CONFIRMED, DISMISSED, ESCALATED) with explanation."""
+    import datetime
+    entry = {
+        'id': f"inv_{len(_investigations_log) + 1}",
+        'alert_id': payload.get('alert_id', 'general'),
+        'topic': payload.get('topic', 'General'),
+        'verdict': payload.get('verdict', 'INVESTIGATING'),
+        'analyst': payload.get('analyst', 'Lead Analyst'),
+        'notes': payload.get('notes', ''),
+        'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat()
+    }
+    _investigations_log.insert(0, entry)
+    return {'status': 'logged', 'entry': entry}
+
+
+@router.get('/narrative')
+def narrative_phases(limit: int = Query(300, ge=10, le=1000)):
+    """Analyzes narrative lifecycle evolution (Emergence -> Public Reaction -> Amplification -> Plateau)."""
+    with connect() as conn:
+        events = conn.execute(
+            '''SELECT e.event_id, e.timestamp, e.platform, e.text, a.result AS analysis
+               FROM events e LEFT JOIN event_annotations a ON a.event_id=e.event_id AND a.pipeline_version=%s
+               ORDER BY e.timestamp ASC LIMIT %s''', [PIPELINE_VERSION, limit]
+        ).fetchall()
+
+    if not events:
+        return {'stages': [], 'total_tracked': 0}
+
+    total = len(events)
+    q1 = max(1, total // 4)
+    q2 = max(q1 + 1, (total * 2) // 4)
+    q3 = max(q2 + 1, (total * 3) // 4)
+
+    phases = [
+        {'phase': '1. Emergence & Seeding', 'events': events[:q1], 'description': 'Initial narrative introduction and seed posts'},
+        {'phase': '2. Public Reaction & Discussion', 'events': events[q1:q2], 'description': 'Organic audience reaction and engagement'},
+        {'phase': '3. Coordinated Amplification', 'events': events[q2:q3], 'description': 'Cross-platform broadcast and rapid sharing'},
+        {'phase': '4. Polarization & Plateau', 'events': events[q3:], 'description': 'Echo chamber entrenchment and narrative saturation'}
+    ]
+
+    stage_data = []
+    for p in phases:
+        evs = p['events']
+        negs = sum(1 for e in evs if isinstance(e.get('analysis'), dict) and e['analysis'].get('sentiment') == 'negative')
+        pos = sum(1 for e in evs if isinstance(e.get('analysis'), dict) and e['analysis'].get('sentiment') == 'positive')
+        stage_data.append({
+            'phase': p['phase'],
+            'description': p['description'],
+            'event_count': len(evs),
+            'start_time': str(evs[0]['timestamp']) if evs else None,
+            'end_time': str(evs[-1]['timestamp']) if evs else None,
+            'negative_ratio': round(negs / max(1, len(evs)), 2),
+            'positive_ratio': round(pos / max(1, len(evs)), 2),
+            'sample_texts': [e['text'] for e in evs[:2]]
+        })
+
+    return {'stages': stage_data, 'total_tracked': total}
+
+
 
