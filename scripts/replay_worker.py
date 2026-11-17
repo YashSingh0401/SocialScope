@@ -26,7 +26,7 @@ def main():
         while True:
             try:
                 result = process_next()
-            except psycopg.OperationalError:
+            except (psycopg.OperationalError, RuntimeError):
                 logging.warning('Database unavailable; retrying in two seconds')
                 time.sleep(2)
                 continue

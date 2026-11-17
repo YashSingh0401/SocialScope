@@ -12,7 +12,11 @@ def main():
     count=0
     try:
         while True:
-            event_id=process_next(analyzer)
+            try:
+                event_id=process_next(analyzer)
+            except Exception as e:
+                time.sleep(2)
+                continue
             if event_id:
                 count+=1
                 print('Annotated',event_id,flush=True)

@@ -31,7 +31,23 @@ def main():
         if not (bindir / initdb_name).exists() and not (bindir / "initdb").exists():
             executable = shutil.which("initdb")
             if not executable:
-                raise SystemExit("Install PostgreSQL or set PG_BINDIR to its bin directory.")
+                msg = (
+                    "\n" + "=" * 72 + "\n"
+                    "  [SocialScope] PostgreSQL binaries (initdb/pg_ctl) were not found.\n"
+                    "=" * 72 + "\n\n"
+                    "Options to run SocialScope:\n\n"
+                    "1. Standalone Demo Mode (Recommended - No installation required):\n"
+                    "   Run the vibrant interactive dashboard directly:\n"
+                    "     python -m scripts.serve\n"
+                    "   Then open http://127.0.0.1:8000 in your browser.\n\n"
+                    "2. Install PostgreSQL on Windows automatically via winget:\n"
+                    "     winget install PostgreSQL.PostgreSQL.16\n\n"
+                    "3. Or connect to any cloud/local PostgreSQL instance (Neon, Supabase, Docker):\n"
+                    "     $env:DATABASE_URL = 'postgresql://user:password@host:5432/dbname'\n"
+                    "     python -m scripts.migrate\n"
+                    "     python -m scripts.serve\n"
+                )
+                raise SystemExit(msg)
             bindir = Path(executable).parent
     initdb_bin = str(bindir / (initdb_name if (bindir / initdb_name).exists() else "initdb"))
     pg_ctl_bin = str(bindir / (pg_ctl_name if (bindir / pg_ctl_name).exists() else "pg_ctl"))

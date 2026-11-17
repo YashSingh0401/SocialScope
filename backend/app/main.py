@@ -22,8 +22,9 @@ app.include_router(analytics_router)
 
 
 @app.exception_handler(psycopg.Error)
+@app.exception_handler(RuntimeError)
 async def database_error(request, exc):
-    return JSONResponse(status_code=503, content={"detail":"Database operation unavailable"})
+    return JSONResponse(status_code=503, content={"detail": f"Database operation unavailable: {exc}"})
 
 
 @app.get("/ready", tags=["System"])
