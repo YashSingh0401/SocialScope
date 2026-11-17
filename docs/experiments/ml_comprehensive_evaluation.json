@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-17T19:07:53Z",
+  "timestamp": "2026-11-17T19:38:19Z",
   "nlp_evaluation": {
     "total_samples": 12,
     "language_accuracy": 0.9167,
@@ -35,13 +35,13 @@
         "unavailable": 1
       }
     },
-    "mean_latency_ms": 35.96,
-    "p95_latency_ms": 2984.93,
+    "mean_latency_ms": 19.59,
+    "p95_latency_ms": 2435.05,
     "total_entities_extracted": 0,
     "emotion_distribution": {
+      "neutral": 5,
       "joy": 3,
-      "anger": 4,
-      "neutral": 5
+      "anger": 4
     }
   },
   "topic_clustering_evaluation": {
