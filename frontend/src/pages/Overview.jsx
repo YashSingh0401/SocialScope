@@ -18,6 +18,7 @@ export default function Overview({ overview, trends, alerts, onLoadDemo, isBusy 
           value={total.toLocaleString()}
           detail="In current surveillance scope"
           icon="📊"
+          theme="cyan"
         />
         <MetricCard
           title="Analyzed"
@@ -25,19 +26,22 @@ export default function Overview({ overview, trends, alerts, onLoadDemo, isBusy 
           detail="Multilingual NLP enrichment done"
           icon="⚡"
           badge={{ text: 'ONNX INT8', type: 'info' }}
+          theme="emerald"
         />
         <MetricCard
           title="Sentiment Coverage"
           value={`${coverage}%`}
           detail="Confidence-backed predictions"
           icon="🎯"
+          theme="purple"
         />
         <MetricCard
           title="Active Spikes"
           value={spikes}
           detail="EWMA statistical surges"
-          icon="⚡"
-          badge={spikes > 0 ? { text: 'HIGH VELOCITY', type: 'warning' } : { text: 'NORMAL', type: 'neutral' }}
+          icon="🚨"
+          badge={spikes > 0 ? { text: 'HIGH VELOCITY', type: 'danger' } : { text: 'NORMAL', type: 'neutral' }}
+          theme={spikes > 0 ? 'rose' : 'amber'}
         />
       </div>
 
@@ -48,7 +52,7 @@ export default function Overview({ overview, trends, alerts, onLoadDemo, isBusy 
               <h3>Sentiment Polarity Distribution</h3>
               <p className="panel-subtitle">Multilingual model output for conversation polarity</p>
             </div>
-            <span className="badge">MODEL OUTPUT</span>
+            <span className="badge badge-purple">MODEL OUTPUT</span>
           </div>
           <SentimentBar items={overview?.sentiment || []} total={total} />
           <div className="panel-footnote">
@@ -62,7 +66,7 @@ export default function Overview({ overview, trends, alerts, onLoadDemo, isBusy 
               <h3>Language Demographics</h3>
               <p className="panel-subtitle">Inferred from textual content via language identification</p>
             </div>
-            <span className="badge">LINGUISTIC</span>
+            <span className="badge badge-emerald">LINGUISTIC</span>
           </div>
           <div className="language-list">
             {(overview?.languages || []).map((l) => (
@@ -93,7 +97,7 @@ export default function Overview({ overview, trends, alerts, onLoadDemo, isBusy 
             <h3>Conversation Volume Timeline</h3>
             <p className="panel-subtitle">Normalized UTC timestamps across monitored channels</p>
           </div>
-          <span className="badge">TIME SERIES</span>
+          <span className="badge badge-cyan">TIME SERIES</span>
         </div>
 
         {overview?.timeline && overview.timeline.length > 0 ? (

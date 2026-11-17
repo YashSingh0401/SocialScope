@@ -23,13 +23,15 @@ export default function Alerts({ alertsData, onInvestigate, onExportBrief }) {
           value={alertList.length}
           detail="Prioritized for analyst review"
           icon="⚠"
+          theme="amber"
         />
         <MetricCard
-          title="Critical Severity"
+          title="Critical Threats"
           value={criticalCount}
           detail="Attention score ≥ 75"
           icon="🚨"
           badge={criticalCount > 0 ? { text: 'IMMEDIATE', type: 'danger' } : { text: 'ZERO', type: 'neutral' }}
+          theme="rose"
         />
         <MetricCard
           title="Coordinated Bot Swarms"
@@ -37,6 +39,7 @@ export default function Alerts({ alertsData, onInvestigate, onExportBrief }) {
           detail="Astroturfing & copypasta detected"
           icon="🤖"
           badge={cibCount > 0 ? { text: 'CIB DETECTED', type: 'warning' } : null}
+          theme="purple"
         />
       </div>
 

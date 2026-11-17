@@ -33,12 +33,14 @@ export default function TrendRadar({ trends, topics }) {
           detail="Surging above dynamic baseline"
           icon="⚡"
           badge={spikes.length > 0 ? { text: 'ALERT', type: 'danger' } : { text: 'QUIET', type: 'neutral' }}
+          theme="rose"
         />
         <MetricCard
           title="Discovered Topics"
           value={topicList.length}
           detail="Semantic clusters identified"
           icon="🏷"
+          theme="purple"
         />
         <MetricCard
           title="Peak Growth Rate"
@@ -46,6 +48,7 @@ export default function TrendRadar({ trends, topics }) {
           detail="Relative to moving expected rate"
           icon="📈"
           trend={{ positive: maxGrowth > 0.5, text: 'High velocity' }}
+          theme="cyan"
         />
       </div>
 
@@ -56,7 +59,7 @@ export default function TrendRadar({ trends, topics }) {
               <h3>Volume vs. EWMA Baseline</h3>
               <p className="panel-subtitle">Calculated expected moving volume vs actual incoming posts</p>
             </div>
-            <span className="badge">STATISTICAL RADAR</span>
+            <span className="badge badge-amber">STATISTICAL RADAR</span>
           </div>
           <TrendChart timeline={timeline} />
         </article>
@@ -67,7 +70,7 @@ export default function TrendRadar({ trends, topics }) {
               <h3>Top Emerging Topics</h3>
               <p className="panel-subtitle">Clusters with highest current momentum</p>
             </div>
-            <span className="badge">CLUSTERS</span>
+            <span className="badge badge-purple">CLUSTERS</span>
           </div>
 
           <div className="topic-radar-list">
@@ -75,7 +78,7 @@ export default function TrendRadar({ trends, topics }) {
               <div className="radar-topic-item" key={t.topic_id}>
                 <div className="radar-topic-header">
                   <strong>{t.label}</strong>
-                  <span className="pill small">{t.size} posts</span>
+                  <span className="pill info small">{t.size} posts</span>
                 </div>
                 <div className="radar-keywords">
                   {(t.keywords || []).map((k) => (
@@ -98,7 +101,7 @@ export default function TrendRadar({ trends, topics }) {
             <h3>Velocity & Anomaly Ledger</h3>
             <p className="panel-subtitle">Timestamped statistical baseline logs</p>
           </div>
-          <span className="badge">LEDGER</span>
+          <span className="badge badge-cyan">LEDGER</span>
         </div>
 
         <div className="tablewrap">

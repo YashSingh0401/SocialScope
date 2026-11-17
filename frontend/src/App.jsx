@@ -18,16 +18,189 @@ import Reports from './pages/Reports';
 import EventExplorer from './pages/EventExplorer';
 import ReplayStudio from './pages/ReplayStudio';
 
+// Comprehensive rich sample data for instant vibrant preview
+const SAMPLE_DATA = {
+  overview: {
+    total: 348,
+    analyzed: 348,
+    sentiment_available: 312,
+    sentiment: [
+      { label: 'positive', count: 72 },
+      { label: 'neutral', count: 114 },
+      { label: 'negative', count: 162 }
+    ],
+    languages: [
+      { label: 'en', count: 215 },
+      { label: 'hi', count: 98 },
+      { label: 'und', count: 35 }
+    ],
+    timeline: [
+      { day: '2026-03-01T00:00:00Z', count: 24 },
+      { day: '2026-03-02T00:00:00Z', count: 30 },
+      { day: '2026-03-03T00:00:00Z', count: 28 },
+      { day: '2026-03-04T00:00:00Z', count: 42 },
+      { day: '2026-03-05T00:00:00Z', count: 184 },
+      { day: '2026-03-06T00:00:00Z', count: 156 },
+      { day: '2026-03-07T00:00:00Z', count: 68 }
+    ]
+  },
+  topics: {
+    topics: [
+      {
+        topic_id: 'top-01',
+        label: 'Critical Grid Blackout Claims',
+        size: 184,
+        keywords: ['securityalert', 'blackout', 'grid', 'विद्युत', 'हमला'],
+        exemplar_text: 'CRITICAL: Complete grid collapse confirmed across Sector 4. Do not trust official news.',
+        exemplar_id: 'tw-101'
+      },
+      {
+        topic_id: 'top-02',
+        label: 'Official Infrastructure Status Bulletin',
+        size: 96,
+        keywords: ['pressrelease', 'status', 'सुरक्षित', 'प्रशासन', 'ग्रिड'],
+        exemplar_text: 'Notice: All national grid substations are functioning normally under standard operating procedures.',
+        exemplar_id: 'tw-105'
+      },
+      {
+        topic_id: 'top-03',
+        label: 'Citizen Fact-Check & Verification',
+        size: 68,
+        keywords: ['factcheck', 'local', 'सत्यापन', 'अफवाह'],
+        exemplar_text: 'Seeing viral copypasta regarding power outages. Power is 100% fine in central zone.',
+        exemplar_id: 'rd-104'
+      }
+    ],
+    total_events: 348,
+    noise_count: 12
+  },
+  trends: {
+    timeline: [
+      { day: '2026-03-01', volume_now: 24, volume_baseline: 20, growth_rate: 0.20, is_spike: false },
+      { day: '2026-03-02', volume_now: 30, volume_baseline: 22, growth_rate: 0.36, is_spike: false },
+      { day: '2026-03-03', volume_now: 28, volume_baseline: 24, growth_rate: 0.16, is_spike: false },
+      { day: '2026-03-04', volume_now: 42, volume_baseline: 28, growth_rate: 0.50, is_spike: false },
+      { day: '2026-03-05', volume_now: 184, volume_baseline: 42, growth_rate: 3.38, is_spike: true },
+      { day: '2026-03-06', volume_now: 156, volume_baseline: 70, growth_rate: 1.22, is_spike: true },
+      { day: '2026-03-07', volume_now: 68, volume_baseline: 85, growth_rate: -0.20, is_spike: false }
+    ],
+    has_active_spike: true,
+    spike_alerts: [
+      { day: '2026-03-05', volume_now: 184, volume_baseline: 42, growth_rate: 3.38, is_spike: true },
+      { day: '2026-03-06', volume_now: 156, volume_baseline: 70, growth_rate: 1.22, is_spike: true }
+    ]
+  },
+  network: {
+    elements: {
+      nodes: [
+        { data: { id: 'disinfo_seed_01', label: 'disinfo_seed_01', community: 1, pagerank: 0.42, is_influencer: true } },
+        { data: { id: 'amplifier_bot_99', label: 'amplifier_bot_99', community: 1, pagerank: 0.18, is_influencer: false } },
+        { data: { id: 'bot_relay_44', label: 'bot_relay_44', community: 1, pagerank: 0.14, is_influencer: false } },
+        { data: { id: 'bridge_broker_alpha', label: 'bridge_broker_alpha', community: 2, pagerank: 0.28, is_bridge: true } },
+        { data: { id: 'official_press', label: 'official_press', community: 3, pagerank: 0.38, is_influencer: true } },
+        { data: { id: 'citizen_observer', label: 'citizen_observer', community: 3, pagerank: 0.16, is_bridge: true } },
+        { data: { id: 'samachar_hindi', label: 'samachar_hindi', community: 3, pagerank: 0.22, is_influencer: false } }
+      ],
+      edges: [
+        { data: { id: 'e1', source: 'disinfo_seed_01', target: 'amplifier_bot_99', kinds: ['mention'], weight: 5 } },
+        { data: { id: 'e2', source: 'disinfo_seed_01', target: 'bot_relay_44', kinds: ['share'], weight: 4 } },
+        { data: { id: 'e3', source: 'amplifier_bot_99', target: 'bridge_broker_alpha', kinds: ['reply'], weight: 3 } },
+        { data: { id: 'e4', source: 'bridge_broker_alpha', target: 'citizen_observer', kinds: ['mention'], weight: 2 } },
+        { data: { id: 'e5', source: 'official_press', target: 'citizen_observer', kinds: ['reply'], weight: 4 } },
+        { data: { id: 'e6', source: 'official_press', target: 'samachar_hindi', kinds: ['share'], weight: 3 } }
+      ]
+    },
+    metrics: {
+      total_nodes: 7,
+      total_edges: 6,
+      communities_count: 3,
+      top_influencers: [
+        { node: 'disinfo_seed_01', score: 0.42 },
+        { node: 'official_press', score: 0.38 },
+        { node: 'bridge_broker_alpha', score: 0.28 }
+      ],
+      bridge_nodes: [
+        { node: 'bridge_broker_alpha', betweenness: 0.185 },
+        { node: 'citizen_observer', betweenness: 0.142 }
+      ]
+    }
+  },
+  alerts: {
+    alerts: [
+      {
+        alert_id: 'alert_cluster_top-01',
+        topic_label: 'Critical Grid Blackout Claims',
+        attention_score: 88.5,
+        threat_level: 'CRITICAL',
+        analyzed_volume: 184,
+        reasons: [
+          'Sudden +338% volume surge exceeding dynamic EWMA baseline threshold',
+          'Heavy negative sentiment concentration (88% negative polarity)',
+          'Coordinated bot cluster detected (3 synchronized propagation bursts)'
+        ],
+        patient_zero: {
+          actor_ref: 'disinfo_seed_01',
+          platform: 'twitter',
+          timestamp: '2026-03-05T08:00:00Z',
+          text: 'BREAKING: Critical security breach reported in central communications grid. Do not trust updates.'
+        },
+        cib_findings: {
+          is_coordinated: true,
+          coordination_score: 0.86,
+          copypasta_clusters: 4,
+          burst_count: 3,
+          flagged_accounts: ['disinfo_seed_01', 'amplifier_bot_99', 'bot_relay_44']
+        },
+        top_amplifiers: [
+          { actor_ref: 'amplifier_bot_99', degree: 14, in_degree: 9, out_degree: 5 },
+          { actor_ref: 'bot_relay_44', degree: 10, in_degree: 6, out_degree: 4 }
+        ],
+        generated_at: '2026-03-05T09:30:00Z'
+      },
+      {
+        alert_id: 'alert_cluster_top-02',
+        topic_label: 'Cross-Border Incursion Rumors',
+        attention_score: 64.0,
+        threat_level: 'HIGH',
+        analyzed_volume: 96,
+        reasons: [
+          'Emergent unverified narrative with high emotional contagion (fear/anger)',
+          'Rapid diffusion via bridge brokers across isolated regional channels'
+        ],
+        patient_zero: {
+          actor_ref: 'rumor_vector_07',
+          platform: 'telegram',
+          timestamp: '2026-03-05T09:12:00Z',
+          text: 'Unverified military movements reported near northern sector checkpoint.'
+        },
+        cib_findings: {
+          is_coordinated: false,
+          coordination_score: 0.28,
+          copypasta_clusters: 1,
+          burst_count: 0,
+          flagged_accounts: []
+        },
+        top_amplifiers: [
+          { actor_ref: 'bridge_broker_alpha', degree: 8, in_degree: 5, out_degree: 3 }
+        ],
+        generated_at: '2026-03-05T10:15:00Z'
+      }
+    ],
+    total_alerts: 2
+  }
+};
+
 export default function App() {
   const [activePage, setActivePage] = useState('Overview');
   const [connected, setConnected] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [demoMode, setDemoMode] = useState(true);
   const [isBusy, setIsBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [offset, setOffset] = useState(0);
 
-  // Data states
+  // Live Data states
   const [overview, setOverview] = useState(null);
   const [rows, setRows] = useState([]);
   const [jobs, setJobs] = useState([]);
@@ -74,10 +247,14 @@ export default function App() {
           setAlertsData(alt);
           setConnected(true);
           setError('');
+
+          // If backend has real events, we can stay in live mode
+          if (o && o.total > 0) {
+            setDemoMode(false);
+          }
         }
       } catch (err) {
         if (active) {
-          setError(err.message || 'Error communicating with surveillance backend.');
           setConnected(false);
         }
       }
@@ -93,6 +270,14 @@ export default function App() {
       clearInterval(timer);
     };
   }, [queryString, offset, refreshKey, autoRefresh]);
+
+  // Determine current active datasets (using SAMPLE_DATA if demoMode is ON or live DB is empty)
+  const isUsingSample = demoMode || (!overview || overview.total === 0);
+  const activeOverview = isUsingSample ? SAMPLE_DATA.overview : overview;
+  const activeTopics = isUsingSample ? SAMPLE_DATA.topics : topicsData;
+  const activeTrends = isUsingSample ? SAMPLE_DATA.trends : trendsData;
+  const activeNetwork = isUsingSample ? SAMPLE_DATA.network : networkData;
+  const activeAlerts = isUsingSample ? SAMPLE_DATA.alerts : alertsData;
 
   async function handleAction(fn) {
     setIsBusy(true);
@@ -113,6 +298,7 @@ export default function App() {
         dataset_name: 'synthetic NLP demo',
         events: DEMO_EVENTS
       });
+      setDemoMode(false);
       return `Loaded synthetic demo: ${res.inserted} inserted, ${res.duplicates} existing.`;
     });
   }
@@ -135,6 +321,7 @@ export default function App() {
 
       setShowImportModal(false);
       setImportJsonText('');
+      setDemoMode(false);
       return importMode === 'import'
         ? `Dataset imported: ${res.inserted} inserted, ${res.duplicates} duplicates, ${res.conflicts} conflicts.`
         : `Replay queued. The worker will replay events at ${importSpeed}× playback speed.`;
@@ -156,8 +343,8 @@ export default function App() {
       <Sidebar
         activePage={activePage}
         setActivePage={setActivePage}
-        alertsCount={alertsData?.total_alerts || alertsData?.alerts?.length || 0}
-        spikeCount={trendsData?.spike_alerts?.length || 0}
+        alertsCount={activeAlerts?.total_alerts || activeAlerts?.alerts?.length || 0}
+        spikeCount={activeTrends?.spike_alerts?.length || 0}
       />
 
       <main className="main-content">
@@ -170,9 +357,26 @@ export default function App() {
           }}
           autoRefresh={autoRefresh}
           setAutoRefresh={setAutoRefresh}
+          demoMode={demoMode}
+          setDemoMode={setDemoMode}
         />
 
         <section className="page-body">
+          {isUsingSample && (
+            <div className="demo-mode-banner">
+              <div className="demo-banner-content">
+                <span className="demo-sparkle">⚡</span>
+                <div>
+                  <strong>DEMO INTELLIGENCE MODE ACTIVE</strong>
+                  <p>Displaying rich pre-computed multi-platform threat scenario (Power Grid Blackout Disinformation campaign). Ingest a dataset or click 'Live Mode' in navbar to view your stored events.</p>
+                </div>
+              </div>
+              <button className="primary small" onClick={() => setShowImportModal(true)}>
+                ＋ Ingest Real Dataset
+              </button>
+            </div>
+          )}
+
           {error && (
             <div className="alert-banner error" role="alert">
               <span>⚠️ {error}</span>
@@ -189,9 +393,9 @@ export default function App() {
 
           {activePage === 'Overview' && (
             <Overview
-              overview={overview}
-              trends={trendsData}
-              alerts={alertsData}
+              overview={activeOverview}
+              trends={activeTrends}
+              alerts={activeAlerts}
               onLoadDemo={handleLoadDemo}
               isBusy={isBusy}
             />
@@ -199,14 +403,14 @@ export default function App() {
 
           {activePage === 'Trend radar' && (
             <TrendRadar
-              trends={trendsData}
-              topics={topicsData}
+              trends={activeTrends}
+              topics={activeTopics}
             />
           )}
 
           {activePage === 'Topic explorer' && (
             <TopicExplorer
-              topics={topicsData}
+              topics={activeTopics}
               onExploreTopic={(t) => {
                 setActivePage('Event explorer');
               }}
@@ -223,13 +427,13 @@ export default function App() {
 
           {activePage === 'Network map' && (
             <Network
-              networkData={networkData}
+              networkData={activeNetwork}
             />
           )}
 
           {activePage === 'Alerts & Intel' && (
             <Alerts
-              alertsData={alertsData}
+              alertsData={activeAlerts}
               onInvestigate={handleInvestigateAlert}
               onExportBrief={handleExportBrief}
             />
@@ -237,7 +441,7 @@ export default function App() {
 
           {activePage === 'Investigation' && (
             <Investigation
-              alertsData={alertsData}
+              alertsData={activeAlerts}
               activeAlertId={investigatingAlertId}
               onExportBrief={handleExportBrief}
             />
@@ -245,17 +449,29 @@ export default function App() {
 
           {activePage === 'Reports' && (
             <Reports
-              alertsData={alertsData}
+              alertsData={activeAlerts}
               preselectedAlertId={reportingAlertId}
             />
           )}
 
           {activePage === 'Event explorer' && (
             <EventExplorer
-              rows={rows}
+              rows={rows.length > 0 ? rows : DEMO_EVENTS.map((d, i) => ({
+                event_id: `demo-${i + 1}`,
+                platform: d.platform,
+                actor_ref: d.actor_ref,
+                timestamp: d.timestamp,
+                text: d.text,
+                analysis: {
+                  language: d.platform === 'dataset' ? 'hi' : 'en',
+                  language_status: 'predicted',
+                  sentiment: d.text.includes('BREAKING') || d.text.includes('खराब') ? 'negative' : d.text.includes('Normally') || d.text.includes('standard') || d.text.includes('सुरक्षित') ? 'positive' : 'neutral',
+                  sentiment_score: 0.94
+                }
+              }))}
               offset={offset}
               setOffset={setOffset}
-              totalShown={rows.length}
+              totalShown={rows.length > 0 ? rows.length : DEMO_EVENTS.length}
             />
           )}
 

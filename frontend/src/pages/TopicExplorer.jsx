@@ -18,12 +18,14 @@ export default function TopicExplorer({ topics, onExploreTopic }) {
           value={topicList.length}
           detail="Cosine semantic clusters formed"
           icon="🏷"
+          theme="purple"
         />
         <MetricCard
           title="Clustered Events"
-          value={clusteredCount}
-          detail={`${clusterCoverage}% of all posts clustered`}
+          value={clusteredCount.toLocaleString()}
+          detail={`${clusterCoverage}% of monitored posts`}
           icon="📦"
+          theme="cyan"
         />
         <MetricCard
           title="Noise / Outliers"
@@ -31,6 +33,7 @@ export default function TopicExplorer({ topics, onExploreTopic }) {
           detail="Isolated unlinked statements"
           icon="🌫"
           badge={{ text: 'FILTERED', type: 'neutral' }}
+          theme="amber"
         />
       </div>
 
@@ -46,7 +49,7 @@ export default function TopicExplorer({ topics, onExploreTopic }) {
           ))}
           {!topicList.length && (
             <div className="empty-state">
-              <p>No topic clusters found. Ingest datasets to group conversations semantically.</p>
+              <p>No topic clusters found. Ingest datasets or enable Demo Data to group conversations semantically.</p>
             </div>
           )}
         </div>
@@ -66,7 +69,7 @@ export default function TopicExplorer({ topics, onExploreTopic }) {
 
               <div className="drawer-field">
                 <label>Post Volume</label>
-                <span>{selectedTopic.size} events</span>
+                <span className="pill info small">{selectedTopic.size} events</span>
               </div>
 
               <div className="drawer-field">

@@ -21,18 +21,21 @@ export default function Network({ networkData }) {
           value={totalNodes}
           detail="Active actors and mention targets"
           icon="🕸"
+          theme="purple"
         />
         <MetricCard
           title="Interactions"
           value={totalEdges}
           detail="Replies, shares, mentions"
           icon="🔗"
+          theme="cyan"
         />
         <MetricCard
           title="Louvain Communities"
           value={communities}
           detail="Echo chambers detected"
           icon="🏛"
+          theme="emerald"
         />
         <MetricCard
           title="Bridge Brokers"
@@ -40,6 +43,7 @@ export default function Network({ networkData }) {
           detail="High betweenness nodes"
           icon="🌉"
           badge={bridgeNodes.length > 0 ? { text: 'MONITORED', type: 'warning' } : null}
+          theme="amber"
         />
       </div>
 
@@ -49,7 +53,7 @@ export default function Network({ networkData }) {
             <h3>Interaction Graph & Community Clusters</h3>
             <p className="panel-subtitle">Directed actor relationships rendered via Cytoscape engine</p>
           </div>
-          <span className="badge">FORCE-DIRECTED CYTOSCAPE</span>
+          <span className="badge badge-purple">FORCE-DIRECTED CYTOSCAPE</span>
         </div>
 
         <CytoscapeGraph
@@ -66,7 +70,7 @@ export default function Network({ networkData }) {
               <h3>Key Opinion Leaders (KOLs)</h3>
               <p className="panel-subtitle">Ranked by PageRank network authority</p>
             </div>
-            <span className="badge">PAGERANK</span>
+            <span className="badge badge-purple">PAGERANK</span>
           </div>
 
           <div className="tablewrap">
@@ -108,7 +112,7 @@ export default function Network({ networkData }) {
               <h3>Information Bridge Brokers</h3>
               <p className="panel-subtitle">Connecting otherwise isolated communities</p>
             </div>
-            <span className="badge">BETWEENNESS</span>
+            <span className="badge badge-amber">BETWEENNESS</span>
           </div>
 
           <div className="tablewrap">
@@ -149,7 +153,7 @@ export default function Network({ networkData }) {
             <h3>Interaction Edges Ledger</h3>
             <p className="panel-subtitle">Directed interactions between actors</p>
           </div>
-          <span className="badge">{elements.edges.length} EDGES</span>
+          <span className="badge badge-cyan">{elements.edges?.length || 0} EDGES</span>
         </div>
 
         <div className="tablewrap" style={{ maxHeight: '280px', overflowY: 'auto' }}>
@@ -163,7 +167,7 @@ export default function Network({ networkData }) {
               </tr>
             </thead>
             <tbody>
-              {elements.edges.slice(0, 50).map((e, idx) => (
+              {elements.edges?.slice(0, 50).map((e, idx) => (
                 <tr key={idx}>
                   <td><code>{e.data?.source}</code></td>
                   <td>
@@ -175,7 +179,7 @@ export default function Network({ networkData }) {
                   <td><b>{e.data?.weight || 1}</b></td>
                 </tr>
               ))}
-              {!elements.edges.length && (
+              {!(elements.edges?.length) && (
                 <tr>
                   <td colSpan="4" className="muted" style={{ textAlign: 'center' }}>
                     No edge connections recorded.

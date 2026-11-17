@@ -1,14 +1,22 @@
 import React from 'react';
 import { useFilters } from '../context/FilterContext';
 
-export default function Navbar({ activePage, connected, onOpenImport, autoRefresh, setAutoRefresh }) {
+export default function Navbar({
+  activePage,
+  connected,
+  onOpenImport,
+  autoRefresh,
+  setAutoRefresh,
+  demoMode,
+  setDemoMode
+}) {
   const { search, setSearch, triggerRefresh } = useFilters();
 
   return (
     <header className="navbar">
       <div className="nav-left">
         <span className="breadcrumb">
-          Workspace <span className="sep">/</span> <strong>{activePage}</strong>
+          Workspace <span className="sep">/</span> <strong className="page-accent">{activePage}</strong>
         </span>
       </div>
 
@@ -17,7 +25,7 @@ export default function Navbar({ activePage, connected, onOpenImport, autoRefres
           <span className="search-icon">🔍</span>
           <input
             type="text"
-            placeholder="Search keywords, actors, hashtags..."
+            placeholder="Search keywords, actors, hashtags, threats..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -28,9 +36,18 @@ export default function Navbar({ activePage, connected, onOpenImport, autoRefres
       </div>
 
       <div className="nav-right">
+        <button
+          className={`demo-toggle-btn ${demoMode ? 'active' : ''}`}
+          onClick={() => setDemoMode(!demoMode)}
+          title="Toggle rich sample intelligence scenario"
+        >
+          <span className="demo-icon">⚡</span>
+          <span>{demoMode ? 'Demo Data: ON' : 'Live Mode'}</span>
+        </button>
+
         <div className={`status-pill ${connected ? 'connected' : 'offline'}`} title={connected ? 'Connected to FastAPI backend' : 'Backend offline or reconnecting'}>
           <span className="indicator" />
-          <span>{connected ? 'LIVE API' : 'OFFLINE'}</span>
+          <span>{connected ? 'LIVE API' : 'STANDALONE'}</span>
         </div>
 
         <button
@@ -38,7 +55,7 @@ export default function Navbar({ activePage, connected, onOpenImport, autoRefres
           onClick={() => setAutoRefresh(!autoRefresh)}
           title="Toggle 5s automatic polling"
         >
-          ↻ {autoRefresh ? 'Auto (5s)' : 'Paused'}
+          ↻ {autoRefresh ? '5s' : 'Paused'}
         </button>
 
         <button className="manual-refresh" onClick={triggerRefresh} title="Manual Refresh">
@@ -46,7 +63,7 @@ export default function Navbar({ activePage, connected, onOpenImport, autoRefres
         </button>
 
         <button className="primary import-trigger" onClick={onOpenImport}>
-          ＋ Import Data
+          ＋ Ingest Data
         </button>
       </div>
     </header>
