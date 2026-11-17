@@ -1,0 +1,26 @@
+[
+  {
+    "platform": "dataset",
+    "source_id": "replay-demo-003",
+    "actor_ref": "synthetic-c",
+    "timestamp": "2026-01-01T00:02:00Z",
+    "text": "Synthetic demo: more students discuss the campus event.",
+    "language": "en"
+  },
+  {
+    "platform": "dataset",
+    "source_id": "replay-demo-001",
+    "actor_ref": "synthetic-a",
+    "timestamp": "2026-01-01T00:00:00Z",
+    "text": "Synthetic demo: a campus event is announced.",
+    "language": "en"
+  },
+  {
+    "platform": "dataset",
+    "source_id": "replay-demo-002",
+    "actor_ref": "synthetic-b",
+    "timestamp": "2026-01-01T00:01:00Z",
+    "text": "काल्पनिक उदाहरण: कॉलेज के कार्यक्रम की चर्चा हो रही है।",
+    "language": "hi"
+  }
+]

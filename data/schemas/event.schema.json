@@ -1,0 +1,188 @@
+{
+  "$defs": {
+    "Engagement": {
+      "additionalProperties": false,
+      "properties": {
+        "likes": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Likes"
+        },
+        "shares": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Shares"
+        },
+        "replies": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Replies"
+        },
+        "views": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Views"
+        }
+      },
+      "title": "Engagement",
+      "type": "object"
+    },
+    "Interaction": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "reply",
+            "share",
+            "mention"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "target_type": {
+          "enum": [
+            "event",
+            "actor"
+          ],
+          "title": "Target Type",
+          "type": "string"
+        },
+        "target_source_id": {
+          "minLength": 1,
+          "title": "Target Source Id",
+          "type": "string"
+        },
+        "target_platform": {
+          "minLength": 1,
+          "title": "Target Platform",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "target_type",
+        "target_source_id",
+        "target_platform"
+      ],
+      "title": "Interaction",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "platform": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Platform",
+      "type": "string"
+    },
+    "source_id": {
+      "maxLength": 512,
+      "minLength": 1,
+      "title": "Source Id",
+      "type": "string"
+    },
+    "actor_ref": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Actor Ref"
+    },
+    "timestamp": {
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "text": {
+      "maxLength": 100000,
+      "minLength": 1,
+      "title": "Text",
+      "type": "string"
+    },
+    "language": {
+      "anyOf": [
+        {
+          "maxLength": 32,
+          "minLength": 2,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Language"
+    },
+    "hashtags": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Hashtags",
+      "type": "array"
+    },
+    "urls": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Urls",
+      "type": "array"
+    },
+    "engagement": {
+      "$ref": "#/$defs/Engagement"
+    },
+    "interactions": {
+      "items": {
+        "$ref": "#/$defs/Interaction"
+      },
+      "title": "Interactions",
+      "type": "array"
+    }
+  },
+  "required": [
+    "platform",
+    "source_id",
+    "timestamp",
+    "text"
+  ],
+  "title": "CanonicalEvent",
+  "type": "object"
+}

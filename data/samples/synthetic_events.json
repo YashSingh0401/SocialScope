@@ -1,0 +1,13 @@
+[
+  {
+    "platform": "dataset",
+    "source_id": "synthetic-001",
+    "actor_ref": "synthetic-actor-001",
+    "timestamp": "2026-11-17T04:30:00Z",
+    "text": "Synthetic example for validating the SocialScope event format.",
+    "language": "en",
+    "engagement": {
+      "likes": 0
+    }
+  }
+]
