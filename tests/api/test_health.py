@@ -12,3 +12,8 @@ class HealthTests(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["status"], "ok")
             self.assertIn("/health", client.get("/openapi.json").json()["paths"])
+            paths = client.get("/openapi.json").json()["paths"]
+            self.assertIn("/analytics/topics", paths)
+            self.assertIn("/analytics/trends", paths)
+            self.assertIn("/analytics/network", paths)
+            self.assertIn("/analytics/alerts", paths)

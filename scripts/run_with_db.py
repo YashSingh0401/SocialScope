@@ -18,11 +18,23 @@ def main():
     root = Path(__file__).resolve().parents[1]
     default = root.parent / "pg-runtime/usr/lib/postgresql/17/bin"
     bindir = Path(os.environ.get("PG_BINDIR", str(default)))
-    if not (bindir / "initdb").exists():
-        executable = shutil.which("initdb")
-        if not executable:
-            raise SystemExit("Install PostgreSQL or set PG_BINDIR to its bin directory.")
-        bindir = Path(executable).parent
+    initdb_name = "initdb.exe" if os.name == "nt" else "initdb"
+    pg_ctl_name = "pg_ctl.exe" if os.name == "nt" else "pg_ctl"
+
+    if not (bindir / initdb_name).exists() and not (bindir / "initdb").exists():
+        if os.name == "nt":
+            for ver in ("17", "16", "15", "14"):
+                candidate = Path(rf"C:\Program Files\PostgreSQL\{ver}\bin")
+                if (candidate / "initdb.exe").exists():
+                    bindir = candidate
+                    break
+        if not (bindir / initdb_name).exists() and not (bindir / "initdb").exists():
+            executable = shutil.which("initdb")
+            if not executable:
+                raise SystemExit("Install PostgreSQL or set PG_BINDIR to its bin directory.")
+            bindir = Path(executable).parent
+    initdb_bin = str(bindir / (initdb_name if (bindir / initdb_name).exists() else "initdb"))
+    pg_ctl_bin = str(bindir / (pg_ctl_name if (bindir / pg_ctl_name).exists() else "pg_ctl"))
     state = root / ".runtime"
     state.mkdir(mode=0o700, exist_ok=True)
     data = state / "postgres"
@@ -32,15 +44,17 @@ def main():
             f.write(secrets.token_urlsafe(32))
     password = password_file.read_text().strip()
     env = os.environ.copy()
-    libdir = os.environ.get("PG_LIBDIR", str(root.parent / "pg-runtime/usr/lib/x86_64-linux-gnu"))
-    env["LD_LIBRARY_PATH"] = libdir + ":" + env.get("LD_LIBRARY_PATH", "")
+    if os.name != "nt":
+        libdir = os.environ.get("PG_LIBDIR", str(root.parent / "pg-runtime/usr/lib/x86_64-linux-gnu"))
+        env["LD_LIBRARY_PATH"] = libdir + ":" + env.get("LD_LIBRARY_PATH", "")
     if not (data / "PG_VERSION").exists():
-        subprocess.run([str(bindir / "initdb"), "-D", str(data), "-U", "socialscope",
+        subprocess.run([initdb_bin, "-D", str(data), "-U", "socialscope",
                         "--auth=scram-sha-256", "--pwfile=" + str(password_file),
                         "--encoding=UTF8", "--locale=C"], env=env, check=True, stdout=subprocess.DEVNULL)
     port = int(os.environ.get("PGPORT", "55432"))
-    subprocess.run([str(bindir / "pg_ctl"), "-D", str(data), "-l", str(state / "postgres.log"),
-                    "-o", f"-h 127.0.0.1 -p {port} -c unix_socket_directories=''", "-w", "start"],env=env,check=True)
+    socket_opt = "" if os.name == "nt" else " -c unix_socket_directories=''"
+    subprocess.run([pg_ctl_bin, "-D", str(data), "-l", str(state / "postgres.log"),
+                    "-o", f"-h 127.0.0.1 -p {port}{socket_opt}", "-w", "start"], env=env, check=True)
     try:
         base = f"postgresql://socialscope:{quote(password)}@127.0.0.1:{port}/"
         with psycopg.connect(base + "postgres", autocommit=True) as conn:
@@ -54,7 +68,7 @@ def main():
         result = subprocess.run(command,cwd=root,env=env)
         return result.returncode
     finally:
-        subprocess.run([str(bindir / "pg_ctl"),"-D",str(data),"-m","fast","-w","stop"],env=env,check=True)
+        subprocess.run([pg_ctl_bin,"-D",str(data),"-m","fast","-w","stop"],env=env,check=True)
 
 
 if __name__ == "__main__":
