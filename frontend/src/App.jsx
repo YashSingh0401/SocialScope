@@ -187,6 +187,86 @@ const SAMPLE_DATA = {
       }
     ],
     total_alerts: 2
+  },
+  audience: {
+    platforms: [
+      { label: 'twitter', count: 184, share: 53 },
+      { label: 'telegram', count: 96, share: 28 },
+      { label: 'reddit', count: 68, share: 19 }
+    ],
+    top_actors: [
+      { actor_ref: 'disinfo_seed_01', count: 28, persona: 'BOT_SWARM_SUSPECT', risk: 'HIGH', platforms: ['twitter', 'telegram'] },
+      { actor_ref: 'amplifier_bot_99', count: 24, persona: 'HIGH_FREQUENCY_AMPLIFIER', risk: 'HIGH', platforms: ['twitter'] },
+      { actor_ref: 'bridge_broker_alpha', count: 18, persona: 'BRIDGE_BROKER', risk: 'MEDIUM', platforms: ['telegram', 'reddit'] },
+      { actor_ref: 'official_press', count: 15, persona: 'KOL_INFLUENCER', risk: 'LOW', platforms: ['twitter'] },
+      { actor_ref: 'citizen_observer', count: 12, persona: 'ORGANIC_PARTICIPANT', risk: 'LOW', platforms: ['reddit'] }
+    ],
+    languages: [
+      { label: 'en', count: 215, pct: 62 },
+      { label: 'hi', count: 98, pct: 28 },
+      { label: 'und', count: 35, pct: 10 }
+    ],
+    geography: [
+      { region: 'Northern Grid Sector', count: 168, pct: 48, confidence: 'HIGH' },
+      { region: 'National Capital Region (NCR)', count: 112, pct: 32, confidence: 'MEDIUM' },
+      { region: 'Western Sub-Station Zone', count: 68, pct: 20, confidence: 'MEDIUM' }
+    ],
+    thematic_affinities: [
+      { category: 'Critical Infrastructure & Power Grid', share: 52 },
+      { category: 'Public Emergency & Regional Rumors', share: 28 },
+      { category: 'Government & Utility Fact-Check', share: 20 }
+    ],
+    confidence_metrics: {
+      sample_adequacy: 0.94,
+      linguistic_certainty: 0.91,
+      behavioral_consistency: 0.88,
+      overall_confidence: 'HIGH (91.7%)'
+    }
+  },
+  narrative: {
+    stages: [
+      {
+        phase: 'Phase 1: Emergence & Seeding',
+        code: 'EMERGENCE',
+        description: 'First mentions and seed claims introduced by primary actor disinfo_seed_01.',
+        event_count: 18,
+        negative_ratio: 0.32,
+        timestamp: '2026-03-05T08:00:00Z',
+        inflection: 'Patient zero post published across Twitter/X',
+        sample_texts: ['BREAKING: Critical security breach reported in central communications grid. Do not trust updates.']
+      },
+      {
+        phase: 'Phase 2: Public Reaction & Engagement',
+        code: 'ENGAGEMENT',
+        description: 'Organic community members question, retweet, and seek local clarification.',
+        event_count: 42,
+        negative_ratio: 0.48,
+        timestamp: '2026-03-05T08:35:00Z',
+        inflection: 'Cross-platform relay to regional Telegram news channels',
+        sample_texts: ['Is anyone else noticing the power dropping in Sector 4? Official lines are busy.']
+      },
+      {
+        phase: 'Phase 3: Coordinated Amplification',
+        code: 'AMPLIFICATION',
+        description: 'Synchronized bot network activates, propagating copypasta claims and alarmist hashtags.',
+        event_count: 184,
+        negative_ratio: 0.88,
+        timestamp: '2026-03-05T09:15:00Z',
+        inflection: 'Astroturfing surge flags statistical EWMA spike (>338%)',
+        sample_texts: ['CRITICAL: Complete grid collapse confirmed across Sector 4. Do not trust official news. #Blackout']
+      },
+      {
+        phase: 'Phase 4: Polarization & Plateau',
+        code: 'RESOLUTION',
+        description: 'Official bulletins and verified fact-checks published, countering viral rumors.',
+        event_count: 104,
+        negative_ratio: 0.52,
+        timestamp: '2026-03-05T10:30:00Z',
+        inflection: 'Official utility bulletin released; viral growth rate decelerates (-20%)',
+        sample_texts: ['Notice: All national grid substations are functioning normally under standard operating procedures. #FactCheck']
+      }
+    ],
+    total_tracked: 348
   }
 };
 
@@ -278,6 +358,8 @@ export default function App() {
   const activeTrends = isUsingSample ? SAMPLE_DATA.trends : trendsData;
   const activeNetwork = isUsingSample ? SAMPLE_DATA.network : networkData;
   const activeAlerts = isUsingSample ? SAMPLE_DATA.alerts : alertsData;
+  const activeAudience = isUsingSample ? SAMPLE_DATA.audience : null;
+  const activeNarrative = isUsingSample ? SAMPLE_DATA.narrative : null;
 
   async function handleAction(fn) {
     setIsBusy(true);
@@ -396,6 +478,8 @@ export default function App() {
               overview={activeOverview}
               trends={activeTrends}
               alerts={activeAlerts}
+              onInvestigate={handleInvestigateAlert}
+              onNavigateToAlerts={() => setActivePage('Alerts')}
               onLoadDemo={handleLoadDemo}
               isBusy={isBusy}
             />
@@ -405,6 +489,9 @@ export default function App() {
             <TrendRadar
               trends={activeTrends}
               topics={activeTopics}
+              onExploreTopic={(t) => {
+                setActivePage('Event explorer');
+              }}
             />
           )}
 
@@ -418,20 +505,20 @@ export default function App() {
           )}
 
           {activePage === 'Narrative timeline' && (
-            <NarrativeTimeline />
+            <NarrativeTimeline sampleNarrative={activeNarrative} />
           )}
 
-          {activePage === 'Audience' && (
-            <Audience />
+          {(activePage === 'Audience' || activePage === 'Audience Intelligence') && (
+            <Audience sampleAudience={activeAudience} />
           )}
 
-          {activePage === 'Network map' && (
+          {(activePage === 'Network map' || activePage === 'Network' || activePage === 'Network Intelligence') && (
             <Network
               networkData={activeNetwork}
             />
           )}
 
-          {activePage === 'Alerts & Intel' && (
+          {(activePage === 'Alerts' || activePage === 'Alerts & Intel') && (
             <Alerts
               alertsData={activeAlerts}
               onInvestigate={handleInvestigateAlert}

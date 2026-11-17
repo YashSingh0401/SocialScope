@@ -17,45 +17,50 @@ export default function Alerts({ alertsData, onInvestigate, onExportBrief }) {
 
   return (
     <div className="page-alerts">
+      {/* Tactical Alerts Telemetry Grid */}
       <div className="metrics-grid">
         <MetricCard
           title="Active Alerts"
           value={alertList.length}
-          detail="Prioritized for analyst review"
+          detail="Prioritized by Attention Engine"
           icon="⚠"
           theme="amber"
         />
         <MetricCard
           title="Critical Threats"
           value={criticalCount}
-          detail="Attention score ≥ 75"
+          detail="Attention score ≥ 75 / 100"
           icon="🚨"
-          badge={criticalCount > 0 ? { text: 'IMMEDIATE', type: 'danger' } : { text: 'ZERO', type: 'neutral' }}
+          badge={criticalCount > 0 ? { text: `${criticalCount} CRITICAL`, type: 'danger' } : { text: 'ZERO', type: 'neutral' }}
           theme="rose"
         />
         <MetricCard
           title="Coordinated Bot Swarms"
           value={cibCount}
-          detail="Astroturfing & copypasta detected"
+          detail="Astroturfing & copypasta clusters"
           icon="🤖"
           badge={cibCount > 0 ? { text: 'CIB DETECTED', type: 'warning' } : null}
           theme="purple"
         />
       </div>
 
+      {/* Severity Filter Bar */}
       <div className="alerts-filter-bar">
-        <span className="filter-label">SEVERITY FILTER:</span>
-        {['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'].map((lvl) => (
-          <button
-            key={lvl}
-            className={`filter-btn ${severityFilter === lvl ? 'active' : ''}`}
-            onClick={() => setSeverityFilter(lvl)}
-          >
-            {lvl}
-          </button>
-        ))}
+        <span className="filter-label">Filter by Severity Tier:</span>
+        <div className="filter-buttons-group">
+          {['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'].map((lvl) => (
+            <button
+              key={lvl}
+              className={`filter-btn ${severityFilter === lvl ? 'active' : ''}`}
+              onClick={() => setSeverityFilter(lvl)}
+            >
+              {lvl}
+            </button>
+          ))}
+        </div>
       </div>
 
+      {/* Prioritized Alert Cards Feed */}
       <div className="alerts-feed">
         {filteredAlerts.map((alertItem) => (
           <AlertCard
@@ -69,7 +74,7 @@ export default function Alerts({ alertsData, onInvestigate, onExportBrief }) {
         {!filteredAlerts.length && (
           <div className="empty-state">
             <h4>No Active Alerts in this Category</h4>
-            <p>The surveillance engine has not flagged any abnormal behavioral bursts matching this filter.</p>
+            <p>The Attention Engine has not flagged any abnormal behavioral bursts matching this filter.</p>
           </div>
         )}
       </div>

@@ -3,34 +3,34 @@ import React from 'react';
 export default function Sidebar({ activePage, setActivePage, alertsCount = 0, spikeCount = 0 }) {
   const sections = [
     {
-      label: 'CORE INTELLIGENCE',
+      label: 'Core Intelligence',
       items: [
-        { id: 'Overview', name: 'Overview', icon: '◈', color: '#38bdf8' },
-        { id: 'Trend radar', name: 'Trend Radar', icon: '⚡', color: '#f59e0b', badge: spikeCount > 0 ? `${spikeCount} SPIKE` : null, badgeClass: 'spike-badge' },
-        { id: 'Topic explorer', name: 'Topic Explorer', icon: '🏷', color: '#818cf8' },
-        { id: 'Narrative timeline', name: 'Narrative Timeline', icon: '⏳', color: '#ec4899' },
-        { id: 'Audience', name: 'Audience Analytics', icon: '👥', color: '#10b981' }
+        { id: 'Overview', name: 'Overview', icon: '◈' },
+        { id: 'Trend radar', name: 'Trend Radar', icon: '⚡', badge: spikeCount > 0 ? `${spikeCount} SPIKE` : null, badgeClass: 'spike-badge' },
+        { id: 'Topic explorer', name: 'Topic Explorer', icon: '🏷' },
+        { id: 'Narrative timeline', name: 'Narrative Timeline', icon: '⏳' },
+        { id: 'Audience', name: 'Audience Intelligence', icon: '👥' }
       ]
     },
     {
-      label: 'GRAPH & TOPOLOGY',
+      label: 'Graph & Topology',
       items: [
-        { id: 'Network map', name: 'Network Map', icon: '🕸', color: '#a78bfa' }
+        { id: 'Network map', name: 'Network Intelligence', icon: '🕸' }
       ]
     },
     {
-      label: 'THREAT INTELLIGENCE',
+      label: 'Threat Operations',
       items: [
-        { id: 'Alerts & Intel', name: 'Alerts & Intel', icon: '⚠', color: '#ef4444', badge: alertsCount > 0 ? String(alertsCount) : null, badgeClass: 'alert-badge' },
-        { id: 'Investigation', name: 'Investigation', icon: '🔍', color: '#06b6d4' },
-        { id: 'Reports', name: 'Intelligence Briefs', icon: '📄', color: '#3b82f6' }
+        { id: 'Alerts', name: 'Alerts', icon: '⚠', badge: alertsCount > 0 ? String(alertsCount) : null, badgeClass: 'alert-badge' },
+        { id: 'Investigation', name: 'Investigation', icon: '🔍' },
+        { id: 'Reports', name: 'Reports', icon: '📄' }
       ]
     },
     {
-      label: 'DATA PIPELINES',
+      label: 'Data Pipelines',
       items: [
-        { id: 'Event explorer', name: 'Event Explorer', icon: '≡', color: '#94a3b8' },
-        { id: 'Replay studio', name: 'Replay Studio', icon: '▷', color: '#14b8a6' }
+        { id: 'Event explorer', name: 'Event Explorer', icon: '≡' },
+        { id: 'Replay studio', name: 'Replay Studio', icon: '▷' }
       ]
     }
   ];
@@ -39,13 +39,13 @@ export default function Sidebar({ activePage, setActivePage, alertsCount = 0, sp
     <aside className="sidebar">
       <div className="sidebar-brand">
         <div className="brand-logo">
-          <span className="logo-glyph">S</span>
+          <div className="logo-glyph">S</div>
           <div className="brand-text">
             <div className="brand-title-row">
-              <strong>SocialScope</strong>
-              <span className="status-tag">INTEL</span>
+              <span className="brand-title">SocialScope</span>
+              <span className="intel-pill">NTRO</span>
             </div>
-            <span className="brand-sub">NTRO / SIH26152</span>
+            <span className="brand-sub">SIH26152 Intel Console</span>
           </div>
         </div>
       </div>
@@ -56,20 +56,15 @@ export default function Sidebar({ activePage, setActivePage, alertsCount = 0, sp
             <span className="nav-section-label">{sec.label}</span>
             <div className="nav-items">
               {sec.items.map((item) => {
-                const isActive = activePage === item.id;
+                const isActive = activePage === item.id || (item.id === 'Alerts' && activePage === 'Alerts & Intel');
                 return (
                   <button
                     key={item.id}
                     className={`nav-button ${isActive ? 'active' : ''}`}
                     onClick={() => setActivePage(item.id)}
                   >
-                    <span
-                      className="nav-icon"
-                      style={{ color: isActive ? '#38bdf8' : item.color }}
-                    >
-                      {item.icon}
-                    </span>
-                    <span className="nav-title">{item.name}</span>
+                    <span className="nav-icon">{item.icon}</span>
+                    <span className="nav-name">{item.name}</span>
                     {item.badge && (
                       <span className={`nav-badge ${item.badgeClass || ''}`}>{item.badge}</span>
                     )}
@@ -82,11 +77,11 @@ export default function Sidebar({ activePage, setActivePage, alertsCount = 0, sp
       </nav>
 
       <div className="sidebar-footer">
-        <div className="footer-status">
+        <div className="system-status-indicator">
           <span className="pulse-dot" />
-          <div className="footer-info">
-            <strong>Active Surveillance</strong>
-            <small>v1.0-mvp · Multi-Signal</small>
+          <div className="system-status-text">
+            <strong>System Operational</strong>
+            <small>Multi-Signal Forensic Pipeline</small>
           </div>
         </div>
       </div>
