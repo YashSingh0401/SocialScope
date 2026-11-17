@@ -1,0 +1,62 @@
+[
+  {
+    "language": "en",
+    "sentiment": "positive",
+    "text": "The staff were friendly and the service was excellent. I loved it."
+  },
+  {
+    "language": "en",
+    "sentiment": "negative",
+    "text": "I hate this terrible product. It stopped working immediately."
+  },
+  {
+    "language": "en",
+    "sentiment": "neutral",
+    "text": "The train departs from platform four at nine in the morning."
+  },
+  {
+    "language": "en",
+    "sentiment": "positive",
+    "text": "Thank you for your wonderful help. I am very happy with the result."
+  },
+  {
+    "language": "en",
+    "sentiment": "negative",
+    "text": "The delivery was late and the package was broken. Very disappointing."
+  },
+  {
+    "language": "en",
+    "sentiment": "neutral",
+    "text": "The report contains three tables and two figures."
+  },
+  {
+    "language": "hi",
+    "sentiment": "positive",
+    "text": "यह सेवा बहुत अच्छी है और मुझे बहुत खुशी हुई।"
+  },
+  {
+    "language": "hi",
+    "sentiment": "negative",
+    "text": "यह सेवा बहुत खराब है। मैं बहुत निराश और नाराज़ हूँ।"
+  },
+  {
+    "language": "hi",
+    "sentiment": "neutral",
+    "text": "बैठक कल सुबह दस बजे मुख्य कार्यालय में होगी।"
+  },
+  {
+    "language": "hi",
+    "sentiment": "positive",
+    "text": "आपकी मदद के लिए बहुत धन्यवाद। आपने बहुत अच्छा काम किया।"
+  },
+  {
+    "language": "hi",
+    "sentiment": "negative",
+    "text": "यह उत्पाद बेकार है और मेरा पैसा बर्बाद हो गया।"
+  },
+  {
+    "language": "hi",
+    "sentiment": "neutral",
+    "text": "इस रिपोर्ट में तीन तालिकाएँ और दो चित्र हैं।"
+  }
+]

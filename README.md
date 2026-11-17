@@ -1,4 +1,4 @@
-# SocialScope — checkpoint 0.3
+# SocialScope — checkpoint 0.4
 
 Cloud-developed social-media intelligence backend.
 
@@ -8,8 +8,10 @@ PostgreSQL 17, versioned SQL migrations, canonical event validation, JSON/CSV
 import, import provenance, duplicate/conflict detection, filtered event queries,
 API liveness/readiness and OpenAPI documentation.
 
-Not implemented: NLP, analytics, frontend, authentication,
-pgvector or public hosting. All bundled sample data is labelled synthetic.
+Also implemented: background language detection and multilingual sentiment,
+versioned annotations, analytics API and a React dashboard with import and replay controls.
+Not implemented: authentication, embeddings/pgvector, topic or graph analysis,
+and public hosting. All bundled sample data is labelled synthetic.
 
 ## Cloud execution
 
@@ -18,9 +20,12 @@ Run from this project root with Python 3.11+:
 ```bash
 python3 -m pip install -r requirements.txt
 python3 -m scripts.setup_cloud_postgres
+python3 -m scripts.download_models
+npm ci --prefix frontend
+npm run build --prefix frontend
 python3 -m scripts.run_with_db python3 -m unittest discover -s tests -v
 python3 -m scripts.run_with_db python3 -m scripts.smoke_test
-python3 -m scripts.run_with_db python3 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+python3 -m scripts.run_with_db python3 -m scripts.serve
 ```
 
 The setup helper targets this Debian 13 amd64 environment and checks package
@@ -39,7 +44,7 @@ For an existing PostgreSQL server, set `DATABASE_URL` externally and run:
 ```bash
 python3 -m scripts.migrate
 python3 -m scripts.import_dataset data/samples/synthetic_events.json --dataset-name synthetic-foundation
-python3 -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+python3 -m scripts.serve
 ```
 
 `.env` is not loaded automatically. Localhost refers to the cloud workspace, not the
@@ -77,10 +82,10 @@ remain future work.
 `scripts`: setup, migrations, import and live checks. `tests`: unit/API/isolated
 PostgreSQL integration tests. `data`: synthetic samples and schema. `docs`: decisions.
 
-`frontend`, `ml`, `graph` and `pipelines` reserve the planned structure; these
-folders do not represent implemented features.
+`frontend` contains the React dashboard; `ml` and `pipelines` contain background
+NLP inference. `graph` remains a placeholder.
 
-Next: evaluated language detection, embeddings and sentiment.
+Next: independent model evaluation, embeddings, topic and graph analysis.
 
 
 ## Historical replay (0.3)
@@ -95,7 +100,7 @@ python3 -m scripts.run_with_db python3 -m scripts.smoke_replay
 python3 -m scripts.run_with_db python3 -m scripts.serve
 ```
 
-`serve` runs the API and independent replay worker together. Creating a replay
+`serve` runs the API, NLP worker and independent replay worker together. Creating a replay
 through the API alone queues it; a worker must be running for progress to advance.
 
 | Method | Endpoint | Purpose |
@@ -136,3 +141,38 @@ Replay is a feed into the shared event store, not an isolated simulation databas
 Previously imported events remain visible in general event queries. Future ML
 backtests must restrict inputs by replay position/virtual time to avoid lookahead.
 No job deletion, automatic dead-letter handling or speed changes mid-run yet.
+
+
+## Language, sentiment and dashboard (0.4)
+
+After building the frontend, `scripts.serve` serves the dashboard at
+http://127.0.0.1:8000 in the cloud workspace. It starts both workers. Imports
+appear immediately; annotations appear as the NLP worker processes events.
+The dashboard refreshes every five seconds and offers filters, an event explorer,
+JSON import and historical replay controls. Sample loading is explicitly synthetic.
+This is a development application, not a permanently hosted public website.
+
+Additional endpoints: `GET /analytics/overview`, `GET /analytics/events`, and
+`GET /replays`. Analytics filters use detected language, not source metadata.
+Original text, supplied language and timestamps remain unchanged. Annotations
+are idempotent per event and pipeline version. Failed inference rolls back and
+leaves the event pending; unexpected worker failures stop the supervisor.
+
+```bash
+python3 -m scripts.evaluate_nlp
+# With DATABASE_URL configured: drain pending events once
+python3 -m scripts.nlp_worker --once
+```
+
+See [NLP implementation and limitations](docs/NLP.md). Model binaries, credentials,
+database files and frontend build outputs are excluded from Git. A fresh clone
+needs the model download and frontend build above. Tests use temporary databases;
+the real-model integration test skips if model weights are absent.
+
+## Managed cloud preview
+
+After installing dependencies, downloading models and building the frontend, run
+`sites-preview start /absolute/path/to/SocialScope` where the managed preview CLI
+is available. The root dev script starts PostgreSQL, API and workers together.
+Use the exact URL returned by the preview service. This preview is temporary.
+See `docs/VERIFICATION_v0.4.md` for the latest checks.

@@ -36,7 +36,7 @@ class DatabaseFixture(unittest.TestCase):
 
     def setUp(self):
         with connect() as conn:
-            conn.execute("TRUNCATE replay_items,replay_jobs,import_events,import_runs,events")
+            conn.execute("TRUNCATE event_annotations,replay_items,replay_jobs,import_events,import_runs,events")
 
     def event(self, source_id="one", **changes):
         return dict(platform="dataset",source_id=source_id,text="A sample discussion",
@@ -88,5 +88,5 @@ class DatabaseTests(DatabaseFixture):
     def test_migration_repeat_and_readiness(self):
         migrate()
         with connect() as conn:
-            self.assertEqual(conn.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"],2)
+            self.assertEqual(conn.execute("SELECT count(*) AS n FROM schema_migrations").fetchone()["n"],3)
         self.assertEqual(self.client.get("/ready").status_code,200)

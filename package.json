@@ -1,0 +1,7 @@
+{
+  "name": "socialscope",
+  "private": true,
+  "scripts": {
+    "dev": "python3 -m scripts.run_with_db python3 -m scripts.serve"
+  }
+}

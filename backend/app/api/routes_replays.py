@@ -37,3 +37,10 @@ def control(replay_id: UUID,action: Literal['pause','resume','cancel']):
         raise HTTPException(404,'Replay not found')
     except ReplayStateError as exc:
         raise HTTPException(409,str(exc))
+
+
+@router.get('')
+def list_replays():
+    from backend.app.db.connection import connect
+    with connect() as conn:
+        return {'items':conn.execute('SELECT * FROM replay_jobs ORDER BY created_at DESC LIMIT 100').fetchall()}

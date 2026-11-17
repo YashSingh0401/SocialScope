@@ -1,0 +1,344 @@
+{
+  "evaluation_type": "synthetic_smoke_check_not_generalization_benchmark",
+  "sample_count": 12,
+  "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+  "language_correct": 11,
+  "sentiment_correct": 11,
+  "sentiment_macro_f1": 0.9523809523809523,
+  "confusion_true_labels": [
+    "negative",
+    "neutral",
+    "positive"
+  ],
+  "confusion_predicted_labels": [
+    "negative",
+    "neutral",
+    "positive",
+    "unavailable"
+  ],
+  "confusion_matrix": [
+    [
+      4,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      4,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      3,
+      1
+    ]
+  ],
+  "warm_mean_inference_ms": 48.410000000000004,
+  "results": [
+    {
+      "expected": {
+        "language": "en",
+        "sentiment": "positive",
+        "text": "The staff were friendly and the service was excellent. I loved it."
+      },
+      "actual": {
+        "language": "en",
+        "language_score": 1.0,
+        "language_status": "detected",
+        "sentiment": "positive",
+        "sentiment_score": 0.9270607829093933,
+        "probabilities": {
+          "negative": 0.01883058436214924,
+          "neutral": 0.05410856008529663,
+          "positive": 0.9270607829093933
+        },
+        "sentiment_status": "predicted",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 2641.39
+      }
+    },
+    {
+      "expected": {
+        "language": "en",
+        "sentiment": "negative",
+        "text": "I hate this terrible product. It stopped working immediately."
+      },
+      "actual": {
+        "language": "en",
+        "language_score": 0.9999999985043413,
+        "language_status": "detected",
+        "sentiment": "negative",
+        "sentiment_score": 0.9537954330444336,
+        "probabilities": {
+          "negative": 0.9537954330444336,
+          "neutral": 0.0321887843310833,
+          "positive": 0.014015687629580498
+        },
+        "sentiment_status": "predicted",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 62.87
+      }
+    },
+    {
+      "expected": {
+        "language": "en",
+        "sentiment": "neutral",
+        "text": "The train departs from platform four at nine in the morning."
+      },
+      "actual": {
+        "language": "en",
+        "language_score": 0.9999999999999971,
+        "language_status": "detected",
+        "sentiment": "neutral",
+        "sentiment_score": 0.7855876088142395,
+        "probabilities": {
+          "negative": 0.05687427520751953,
+          "neutral": 0.7855876088142395,
+          "positive": 0.15753817558288574
+        },
+        "sentiment_status": "predicted",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 114.63
+      }
+    },
+    {
+      "expected": {
+        "language": "en",
+        "sentiment": "positive",
+        "text": "Thank you for your wonderful help. I am very happy with the result."
+      },
+      "actual": {
+        "language": "en",
+        "language_score": 1.0,
+        "language_status": "detected",
+        "sentiment": "positive",
+        "sentiment_score": 0.9419971704483032,
+        "probabilities": {
+          "negative": 0.014779983088374138,
+          "neutral": 0.04322286322712898,
+          "positive": 0.9419971704483032
+        },
+        "sentiment_status": "predicted",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 30.7
+      }
+    },
+    {
+      "expected": {
+        "language": "en",
+        "sentiment": "negative",
+        "text": "The delivery was late and the package was broken. Very disappointing."
+      },
+      "actual": {
+        "language": "en",
+        "language_score": 1.0,
+        "language_status": "detected",
+        "sentiment": "negative",
+        "sentiment_score": 0.9506064653396606,
+        "probabilities": {
+          "negative": 0.9506064653396606,
+          "neutral": 0.039163749665021896,
+          "positive": 0.010229699313640594
+        },
+        "sentiment_status": "predicted",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 42.03
+      }
+    },
+    {
+      "expected": {
+        "language": "en",
+        "sentiment": "neutral",
+        "text": "The report contains three tables and two figures."
+      },
+      "actual": {
+        "language": "en",
+        "language_score": 0.999999999999927,
+        "language_status": "detected",
+        "sentiment": "neutral",
+        "sentiment_score": 0.8322674036026001,
+        "probabilities": {
+          "negative": 0.09655119478702545,
+          "neutral": 0.8322674036026001,
+          "positive": 0.07118143141269684
+        },
+        "sentiment_status": "predicted",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 24.44
+      }
+    },
+    {
+      "expected": {
+        "language": "hi",
+        "sentiment": "positive",
+        "text": "यह सेवा बहुत अच्छी है और मुझे बहुत खुशी हुई।"
+      },
+      "actual": {
+        "language": "hi",
+        "language_score": 0.9831903134896487,
+        "language_status": "detected",
+        "sentiment": "positive",
+        "sentiment_score": 0.9174209237098694,
+        "probabilities": {
+          "negative": 0.023673132061958313,
+          "neutral": 0.05890592187643051,
+          "positive": 0.9174209237098694
+        },
+        "sentiment_status": "predicted",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 99.73
+      }
+    },
+    {
+      "expected": {
+        "language": "hi",
+        "sentiment": "negative",
+        "text": "यह सेवा बहुत खराब है। मैं बहुत निराश और नाराज़ हूँ।"
+      },
+      "actual": {
+        "language": "hi",
+        "language_score": 0.9999999999981988,
+        "language_status": "detected",
+        "sentiment": "negative",
+        "sentiment_score": 0.948624312877655,
+        "probabilities": {
+          "negative": 0.948624312877655,
+          "neutral": 0.03806553781032562,
+          "positive": 0.013310209847986698
+        },
+        "sentiment_status": "predicted",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 74.18
+      }
+    },
+    {
+      "expected": {
+        "language": "hi",
+        "sentiment": "neutral",
+        "text": "बैठक कल सुबह दस बजे मुख्य कार्यालय में होगी।"
+      },
+      "actual": {
+        "language": "hi",
+        "language_score": 0.9998303964528227,
+        "language_status": "detected",
+        "sentiment": "neutral",
+        "sentiment_score": 0.7610464692115784,
+        "probabilities": {
+          "negative": 0.03708295896649361,
+          "neutral": 0.7610464692115784,
+          "positive": 0.20187054574489594
+        },
+        "sentiment_status": "predicted",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 32.56
+      }
+    },
+    {
+      "expected": {
+        "language": "hi",
+        "sentiment": "positive",
+        "text": "आपकी मदद के लिए बहुत धन्यवाद। आपने बहुत अच्छा काम किया।"
+      },
+      "actual": {
+        "language": "und",
+        "language_score": 0.5226380915160568,
+        "language_status": "uncertain",
+        "sentiment": null,
+        "sentiment_score": null,
+        "probabilities": {},
+        "sentiment_status": "unsupported_language",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 5.11
+      }
+    },
+    {
+      "expected": {
+        "language": "hi",
+        "sentiment": "negative",
+        "text": "यह उत्पाद बेकार है और मेरा पैसा बर्बाद हो गया।"
+      },
+      "actual": {
+        "language": "hi",
+        "language_score": 0.9747110177260004,
+        "language_status": "detected",
+        "sentiment": "negative",
+        "sentiment_score": 0.7804522514343262,
+        "probabilities": {
+          "negative": 0.7804522514343262,
+          "neutral": 0.1499120593070984,
+          "positive": 0.06963567435741425
+        },
+        "sentiment_status": "predicted",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 24.41
+      }
+    },
+    {
+      "expected": {
+        "language": "hi",
+        "sentiment": "neutral",
+        "text": "इस रिपोर्ट में तीन तालिकाएँ और दो चित्र हैं।"
+      },
+      "actual": {
+        "language": "hi",
+        "language_score": 0.9998025342850176,
+        "language_status": "detected",
+        "sentiment": "neutral",
+        "sentiment_score": 0.8080188632011414,
+        "probabilities": {
+          "negative": 0.04979998990893364,
+          "neutral": 0.8080188632011414,
+          "positive": 0.1421811729669571
+        },
+        "sentiment_status": "predicted",
+        "truncated": false,
+        "pipeline_version": "langid-1.1.6_xlmt-int8-3112e85dea04_v1",
+        "model_id": "onnx-community/twitter-xlm-roberta-base-sentiment-ONNX",
+        "model_revision": "3112e85dea04f0019bf01282916588e3c9dd9bc8",
+        "inference_ms": 21.85
+      }
+    }
+  ],
+  "limitations": [
+    "Tiny authored examples; not independent or representative.",
+    "No calibration measurement.",
+    "Hinglish, sarcasm and other languages not evaluated.",
+    "Quantized conversion not compared numerically with original model."
+  ]
+}
