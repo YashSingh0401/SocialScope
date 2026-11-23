@@ -88,6 +88,27 @@ NLP inference. `graph` remains a placeholder.
 Next: independent model evaluation, embeddings, topic and graph analysis.
 
 
+## Live Ingestion Connectors (Reddit, YouTube, Telegram)
+
+SocialScope includes real-time connectors in `connectors/` to stream and normalize live social data into `CanonicalEvent` structures:
+
+* **Reddit (`connectors/reddit.py`)**: Fetches new subreddit posts, search queries, scores, and comment counts using free developer OAuth (`REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET`).
+* **YouTube (`connectors/youtube.py`)**: Queries video discussions and comment threads using the free Google Cloud Data API v3 (`YOUTUBE_API_KEY`), with a zero-auth public channel RSS fallback.
+* **Telegram (`connectors/telegram.py`)**: Pulls public broadcasts and bot updates (`TELEGRAM_BOT_TOKEN`) or public channel previews.
+
+Run live ingestion via CLI:
+
+```bash
+# Ingest YouTube channel updates
+python -m scripts.ingest_live --platform youtube --target UC_x5XG1OV2P6uZZ5FSM9Ttw --mode rss --limit 15 --output-json data/samples/live_youtube.json
+
+# Ingest live subreddit posts (requires free REDDIT_CLIENT_ID & SECRET in .env)
+python -m scripts.ingest_live --platform reddit --target cybersecurity --limit 25 --save-db
+
+# Ingest from Telegram bot
+python -m scripts.ingest_live --platform telegram --target news_updates --mode bot --limit 20 --api-url http://127.0.0.1:8000
+```
+
 ## Historical replay (0.3)
 
 Replay snapshots the validated input into PostgreSQL, sorts by original UTC event

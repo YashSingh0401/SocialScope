@@ -1,316 +1,165 @@
-import React, { useEffect, useState } from 'react';
-import { api } from '../services/api';
-import MetricCard from '../components/MetricCard';
-import { formatLanguage } from '../utils/formatters';
+import React, { useState } from 'react';
+import ScreenCard from '../components/ScreenCard';
 
-export default function Audience({ sampleAudience }) {
-  const [data, setData] = useState(sampleAudience || null);
-  const [loading, setLoading] = useState(!sampleAudience);
+export default function Audience({ onNavigate }) {
+  const [selectedLang, setSelectedLang] = useState('all');
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const res = await api.getAudience();
-        if (res && res.platforms && res.platforms.length > 0) {
-          setData(res);
-          return;
-        }
-      } catch {
-        // Fallback to sample data
-      }
+  const totalEvents = 348;
+  const knownLanguageCount = 313; // 215 en + 98 hi
+  const unknownLanguageCount = 35; // und
+  const regionCoverage = '80% (NCR & Northern Grid)';
 
-      if (sampleAudience) {
-        setData(sampleAudience);
-      } else {
-        setData({
-          platforms: [
-            { label: 'twitter', count: 184, share: 53 },
-            { label: 'telegram', count: 96, share: 28 },
-            { label: 'reddit', count: 68, share: 19 }
-          ],
-          top_actors: [
-            { actor_ref: 'disinfo_seed_01', count: 28, persona: 'BOT_SWARM_SUSPECT', risk: 'HIGH', platforms: ['twitter', 'telegram'] },
-            { actor_ref: 'amplifier_bot_99', count: 24, persona: 'HIGH_FREQUENCY_AMPLIFIER', risk: 'HIGH', platforms: ['twitter'] },
-            { actor_ref: 'bridge_broker_alpha', count: 18, persona: 'BRIDGE_BROKER', risk: 'MEDIUM', platforms: ['telegram', 'reddit'] },
-            { actor_ref: 'official_press', count: 15, persona: 'KOL_INFLUENCER', risk: 'LOW', platforms: ['twitter'] },
-            { actor_ref: 'citizen_observer', count: 12, persona: 'ORGANIC_PARTICIPANT', risk: 'LOW', platforms: ['reddit'] }
-          ],
-          languages: [
-            { label: 'en', count: 215, pct: 62 },
-            { label: 'hi', count: 98, pct: 28 },
-            { label: 'und', count: 35, pct: 10 }
-          ],
-          geography: [
-            { region: 'Northern Grid Sector', count: 168, pct: 48, confidence: 'HIGH' },
-            { region: 'National Capital Region (NCR)', count: 112, pct: 32, confidence: 'MEDIUM' },
-            { region: 'Western Sub-Station Zone', count: 68, pct: 20, confidence: 'MEDIUM' }
-          ],
-          thematic_affinities: [
-            { category: 'Critical Infrastructure & Power Grid', share: 52 },
-            { category: 'Public Emergency & Regional Rumors', share: 28 },
-            { category: 'Government & Utility Fact-Check', share: 20 }
-          ],
-          confidence_metrics: {
-            sample_adequacy: 0.94,
-            linguistic_certainty: 0.91,
-            behavioral_consistency: 0.88,
-            overall_confidence: 'HIGH (91.7%)'
-          }
-        });
-      }
-      setLoading(false);
-    }
-    load();
-  }, [sampleAudience]);
+  const languages = [
+    { code: 'en', label: 'English', count: 215, pct: '61.8%' },
+    { code: 'hi', label: 'Hindi (हिंदी)', count: 98, pct: '28.2%' },
+    { code: 'und', label: 'Undetermined / Noise', count: 35, pct: '10.0%' }
+  ];
 
-  const totalEvents = data?.platforms?.reduce((sum, p) => sum + (p.count || 0), 0) || 348;
-  const confidence = data?.confidence_metrics || {
-    sample_adequacy: 0.94,
-    linguistic_certainty: 0.91,
-    behavioral_consistency: 0.88,
-    overall_confidence: 'HIGH (91.7%)'
-  };
+  const attributes = [
+    { attribute: 'Language (ISO 639-1)', known: 313, unknown: 35, pct: '89.9%', note: 'langid calibrated confidence > 0.85' },
+    { attribute: 'Platform Source', known: 348, unknown: 0, pct: '100%', note: 'Canonical ingest origin verified' },
+    { attribute: 'Regional Geographic Focus', known: 280, unknown: 68, pct: '80.5%', note: 'Linguistic toponym NER extraction' },
+    { attribute: 'Actor Persona Category', known: 242, unknown: 106, pct: '69.5%', note: 'Heuristic interaction graph classification' },
+    { attribute: 'Demographic Age/Gender Cohort', known: 0, unknown: 348, pct: '0%', note: 'Suppressed: No defensible aggregate supplied in raw dataset' }
+  ];
+
+  const evidenceRows = attributes.map((att) => ({
+    cells: [
+      <strong key="1" style={{ color: '#142838' }}>{att.attribute}</strong>,
+      <span key="2" style={{ color: att.known > 0 ? '#15803d' : '#64748b', fontWeight: 600 }}>{att.known} ({att.pct})</span>,
+      <span key="3" style={{ color: att.unknown > 0 ? '#b45309' : '#15803d' }}>{att.unknown} ({att.note})</span>
+    ]
+  }));
+
+  const maxLangCount = Math.max(...languages.map((l) => l.count), 1);
+
+  const primaryContent = (
+    <div>
+      <div className="section-headline-row">
+        <div>
+          <h4 className="section-headline">Language distribution (Observed)</h4>
+          <span style={{ fontSize: '12px', color: '#64748b' }}>
+            Click a language bar to isolate evidence. Unknown language events remain in the denominator.
+          </span>
+        </div>
+      </div>
+
+      <div className="chart-container" style={{ minHeight: '160px', height: '170px' }}>
+        <div className="bar-chart-series" style={{ height: '140px' }}>
+          {languages.map((lang, idx) => {
+            const heightPct = Math.round((lang.count / maxLangCount) * 100);
+            const isSelected = selectedLang === lang.code;
+            return (
+              <div
+                key={idx}
+                className={`bar-column ${isSelected ? 'selected' : ''}`}
+                onClick={() => setSelectedLang(isSelected ? 'all' : lang.code)}
+                title={`${lang.label}: ${lang.count} events (${lang.pct})`}
+              >
+                <span className="bar-value-tooltip">{lang.count}</span>
+                <div
+                  className="bar-fill"
+                  style={{
+                    height: `${heightPct}%`,
+                    background: lang.code === 'und' ? '#94a3b8' : isSelected ? 'var(--color-teal-dark)' : 'var(--color-teal)'
+                  }}
+                />
+                <span className="bar-label">{lang.label}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Cohort Estimates Inferred Section */}
+      <div style={{ marginTop: '24px', padding: '16px', background: 'var(--color-bg-subtle)', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+          <h5 style={{ margin: 0, fontSize: '13px', color: '#142838', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            Inferred Geographic Cohort Distribution
+          </h5>
+          <span className="badge-status ready">Approved Aggregate Method (Toponym NER)</span>
+        </div>
+        <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 12px 0' }}>
+          Toponym entity clustering reveals regional concentration across northern power grid districts.
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+          <div style={{ padding: '10px', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: '4px' }}>
+            <span style={{ fontSize: '11px', color: '#64748b' }}>Primary Hotspot</span>
+            <div style={{ fontWeight: 700, fontSize: '14px', color: '#142838' }}>Sector 4 / Northern Grid</div>
+            <small style={{ color: '#007a78', fontWeight: 600 }}>168 events (48.3%)</small>
+          </div>
+          <div style={{ padding: '10px', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: '4px' }}>
+            <span style={{ fontSize: '11px', color: '#64748b' }}>Secondary District</span>
+            <div style={{ fontWeight: 700, fontSize: '14px', color: '#142838' }}>National Capital Region (NCR)</div>
+            <small style={{ color: '#007a78', fontWeight: 600 }}>112 events (32.2%)</small>
+          </div>
+          <div style={{ padding: '10px', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: '4px' }}>
+            <span style={{ fontSize: '11px', color: '#64748b' }}>Western Substations</span>
+            <div style={{ fontWeight: 700, fontSize: '14px', color: '#142838' }}>Western Distribution Loop</div>
+            <small style={{ color: '#007a78', fontWeight: 600 }}>68 events (19.5%)</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const inspectorContent = (
+    <div className="inspector-panel">
+      <div className="section-headline-row">
+        <h4 className="section-headline">Attribute coverage</h4>
+      </div>
+      <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 8px 0' }}>
+        Denominator audits and missing value transparency.
+      </p>
+
+      <div className="ranking-list">
+        {attributes.map((att, idx) => (
+          <div key={idx} className="ranking-item" style={{ cursor: 'default' }}>
+            <div className="ranking-title-row">
+              <span className="ranking-name" style={{ fontSize: '12px' }}>{att.attribute}</span>
+              <span className="ranking-metric" style={{ fontSize: '12px' }}>{att.pct}</span>
+            </div>
+            <div className="ranking-sub">
+              Known: <strong>{att.known}</strong> / Unknown: <strong>{att.unknown}</strong>
+            </div>
+            <div style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>
+              {att.note}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ padding: '10px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '4px', fontSize: '11.5px', color: '#92400e' }}>
+        <strong>Defensible Privacy Protocol:</strong> Individual demographic profiling is suppressed. Only aggregate linguistic and toponym distributions are rendered.
+      </div>
+    </div>
+  );
 
   return (
-    <div className="page-audience">
-      {/* Ethical Intelligence Disclaimer */}
-      <div className="audience-disclaimer">
-        <div className="disclaimer-icon-box">🛡</div>
-        <div className="disclaimer-text">
-          <div className="disclaimer-title">DEFENSIBLE AGGREGATE DEMOGRAPHICS & GEOGRAPHY</div>
-          <p>
-            Under strict data privacy & compliance standards, observed technical telemetry (platform source, timestamps) is strictly partitioned from probabilistic inferences (regional linguistic dialect heuristics). No invasive profiling is performed.
-          </p>
+    <div className="screen-container">
+      <header className="screen-header">
+        <div className="screen-route-meta">
+          <span className="route-pill">/audience</span>
+          <span className="section-kicker">Core Intelligence</span>
         </div>
-      </div>
+        <h1 className="screen-title">Audience</h1>
+        <p className="screen-question">Which aggregate audience characteristics are represented in this discussion?</p>
+      </header>
 
-      {/* Audience Telemetry KPI Grid */}
-      <div className="metrics-grid">
-        <MetricCard
-          title="Monitored Channels"
-          value={data?.platforms?.length || 3}
-          detail="Twitter/X, Telegram, Reddit active"
-          icon="🌐"
-          theme="cyan"
-        />
-        <MetricCard
-          title="Identified Actors"
-          value={data?.top_actors?.length || 5}
-          detail="Categorized by behavioral persona"
-          icon="👥"
-          theme="purple"
-        />
-        <MetricCard
-          title="Statistical Confidence"
-          value={confidence.overall_confidence}
-          detail="Multi-signal aggregation certainty"
-          icon="🎯"
-          badge={{ text: 'VERIFIED', type: 'info' }}
-          theme="emerald"
-        />
-        <MetricCard
-          title="Top Regional Focus"
-          value="Northern Grid"
-          detail="48% geographic discussion volume"
-          icon="📍"
-          theme="amber"
-        />
-      </div>
-
-      {/* Row 1: Language Distribution & Available Geography */}
-      <div className="panels-grid">
-        {/* Language Distribution */}
-        <article className="panel">
-          <div className="panel-header">
-            <div>
-              <h3>Language Distribution</h3>
-              <p className="panel-subtitle">Script and dialect analysis across English and Indic regional posts</p>
-            </div>
-            <span className="badge badge-emerald">Linguistic Models</span>
-          </div>
-
-          <div className="audience-list">
-            {(data?.languages || []).map((l) => (
-              <div className="audience-row" key={l.label}>
-                <div className="audience-row-head">
-                  <span className="row-label">{formatLanguage(l.label)} <code>[{l.label}]</code></span>
-                  <strong className="row-val">{l.pct || Math.round((l.count / totalEvents) * 100)}% ({l.count} posts)</strong>
-                </div>
-                <div className="progress-bar-track">
-                  <div
-                    className="progress-bar-fill fill-emerald"
-                    style={{ width: `${l.pct || Math.round((l.count / totalEvents) * 100)}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        {/* Available Geography */}
-        <article className="panel">
-          <div className="panel-header">
-            <div>
-              <h3>Available Regional Geography</h3>
-              <p className="panel-subtitle">Geographic focus derived from location keywords and entity mentions</p>
-            </div>
-            <span className="badge badge-amber">NER Geography</span>
-          </div>
-
-          <div className="audience-list">
-            {(data?.geography || [
-              { region: 'Northern Grid Sector', count: 168, pct: 48, confidence: 'HIGH' },
-              { region: 'National Capital Region (NCR)', count: 112, pct: 32, confidence: 'MEDIUM' },
-              { region: 'Western Sub-Station Zone', count: 68, pct: 20, confidence: 'MEDIUM' }
-            ]).map((g) => (
-              <div className="audience-row" key={g.region}>
-                <div className="audience-row-head">
-                  <span className="row-label">📍 {g.region}</span>
-                  <div className="row-meta">
-                    <span className={`pill small ${g.confidence === 'HIGH' ? 'info' : 'neutral'}`}>{g.confidence} CONFIDENCE</span>
-                    <strong className="row-val">{g.pct}%</strong>
-                  </div>
-                </div>
-                <div className="progress-bar-track">
-                  <div
-                    className="progress-bar-fill fill-amber"
-                    style={{ width: `${g.pct}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="panel-footnote">
-            Derived via multilingual Named Entity Recognition on infrastructure markers (e.g. "Sector 4", "ग्रिड", "Delhi Substation").
-          </div>
-        </article>
-      </div>
-
-      {/* Row 2: Audience Interests & Confidence Indicators */}
-      <div className="panels-grid">
-        {/* Audience Interests & Thematic Affinities */}
-        <article className="panel">
-          <div className="panel-header">
-            <div>
-              <h3>Audience Interests & Thematic Affinities</h3>
-              <p className="panel-subtitle">Semantic clustering of discussion subjects and audience focus areas</p>
-            </div>
-            <span className="badge badge-purple">Thematic Affinities</span>
-          </div>
-
-          <div className="audience-list">
-            {(data?.thematic_affinities || [
-              { category: 'Critical Infrastructure & Power Grid', share: 52 },
-              { category: 'Public Emergency & Regional Rumors', share: 28 },
-              { category: 'Government & Utility Fact-Check', share: 20 }
-            ]).map((th) => (
-              <div className="audience-row" key={th.category}>
-                <div className="audience-row-head">
-                  <span className="row-label">{th.category}</span>
-                  <strong className="row-val">{th.share}% share</strong>
-                </div>
-                <div className="progress-bar-track">
-                  <div
-                    className="progress-bar-fill fill-purple"
-                    style={{ width: `${th.share}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </article>
-
-        {/* Confidence Indicators */}
-        <article className="panel">
-          <div className="panel-header">
-            <div>
-              <h3>Statistical Confidence Indicators</h3>
-              <p className="panel-subtitle">Defensible metrics validating the reliability of demographic estimates</p>
-            </div>
-            <span className="badge badge-cyan">Confidence Engine</span>
-          </div>
-
-          <div className="confidence-metrics-grid">
-            <div className="confidence-tile">
-              <span className="confidence-title">Sample Adequacy</span>
-              <strong className="confidence-number">{Math.round((confidence.sample_adequacy || 0.94) * 100)}%</strong>
-              <small>Sufficient volume for Central Limit Theorem validity (N &gt; 300)</small>
-            </div>
-
-            <div className="confidence-tile">
-              <span className="confidence-title">Linguistic Certainty</span>
-              <strong className="confidence-number">{Math.round((confidence.linguistic_certainty || 0.91) * 100)}%</strong>
-              <small>FastText / transformer token probability margin &gt; 0.70</small>
-            </div>
-
-            <div className="confidence-tile">
-              <span className="confidence-title">Behavioral Consistency</span>
-              <strong className="confidence-number">{Math.round((confidence.behavioral_consistency || 0.88) * 100)}%</strong>
-              <small>Cross-platform handle correlation & interaction stability</small>
-            </div>
-
-            <div className="confidence-tile highlight">
-              <span className="confidence-title">Audit Status</span>
-              <strong className="confidence-number text-emerald">PASSED</strong>
-              <small>Adheres to enterprise transparency and defensible attribution standards</small>
-            </div>
-          </div>
-        </article>
-      </div>
-
-      {/* Behavioral Persona Segmentation Table */}
-      <article className="panel">
-        <div className="panel-header">
-          <div>
-            <h3>Behavioral Persona Segmentation</h3>
-            <p className="panel-subtitle">Actor classification based on amplification frequency and interaction topology</p>
-          </div>
-          <span className="badge badge-cyan">{data?.top_actors?.length || 5} PROFILES</span>
-        </div>
-
-        <div className="tablewrap">
-          <table className="tactical-table">
-            <thead>
-              <tr>
-                <th>Actor Handle</th>
-                <th>Behavioral Persona</th>
-                <th>Monitored Volume</th>
-                <th>Observed Platforms</th>
-                <th>Threat Assessment</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(data?.top_actors || []).map((act, i) => (
-                <tr key={i}>
-                  <td>
-                    <code>@{act.actor_ref}</code>
-                  </td>
-                  <td>
-                    <span className={`persona-tag ${act.persona?.toLowerCase()}`}>
-                      {act.persona?.replace(/_/g, ' ') || 'ORGANIC'}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="tabular-val">{act.count} posts</span>
-                  </td>
-                  <td>
-                    <div className="platforms-row">
-                      {(act.platforms || ['twitter']).map((p) => (
-                        <span key={p} className="micro-tag">{p}</span>
-                      ))}
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`pill small ${act.risk === 'HIGH' ? 'danger' : act.risk === 'MEDIUM' ? 'warning' : 'neutral'}`}>
-                      {act.risk || 'LOW'} RISK
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </article>
+      <ScreenCard
+        scopeFilters={['Critical Grid Blackout Claims', 'All Languages', 'Cross-Platform']}
+        metricCards={[
+          { label: 'Events in scope', value: totalEvents, sub: 'Total observation denominator' },
+          { label: 'Known language', value: `${knownLanguageCount} (${Math.round((knownLanguageCount/totalEvents)*100)}%)`, sub: 'ISO language confidence > 0.85' },
+          { label: 'Region coverage', value: regionCoverage, sub: 'Toponym geo-resolution' }
+        ]}
+        primaryContent={primaryContent}
+        inspectorContent={inspectorContent}
+        evidenceColumns={['Attribute', 'Known count', 'Unknown count']}
+        evidenceRows={evidenceRows}
+        evidenceTitle="Audience Attribute Coverage Evidence"
+      />
     </div>
   );
 }

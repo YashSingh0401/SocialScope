@@ -1,302 +1,250 @@
-import React, { useState, useEffect } from 'react';
-import { api } from '../services/api';
-import EvidencePanel from '../components/EvidencePanel';
+import React, { useState } from 'react';
+import ScreenCard from '../components/ScreenCard';
 
-export default function Investigation({ alertsData, activeAlertId, onExportBrief }) {
-  const alertList = alertsData?.alerts || [];
-  const [selectedAlertId, setSelectedAlertId] = useState(activeAlertId || alertList[0]?.alert_id);
-  const [verdict, setVerdict] = useState('CONFIRMED_THREAT');
-  const [analystNotes, setAnalystNotes] = useState('');
-  const [confidenceRating, setConfidenceRating] = useState('HIGH');
-  const [investigations, setInvestigations] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [feedbackMsg, setFeedbackMsg] = useState('');
+export default function Investigation({ alertId = 'alert_cluster_top-01', onNavigate }) {
+  const [decision, setDecision] = useState('Confirm');
+  const [notes, setNotes] = useState('Confirmed coordinated inauthentic behavior campaign propagating falsified power grid blackout claims. Attributed to bot swarm cluster initiated by actor disinfo_seed_01.');
+  const [analystName, setAnalystName] = useState('Lead Analyst');
+  const [saveStatus, setSaveStatus] = useState('');
+  const [concurrencyConflict, setConcurrencyConflict] = useState(null);
 
-  const currentDossier = alertList.find((a) => a.alert_id === selectedAlertId) || alertList[0];
-
-  useEffect(() => {
-    if (activeAlertId) {
-      setSelectedAlertId(activeAlertId);
+  const [auditHistory, setAuditHistory] = useState([
+    {
+      decision: 'Investigate',
+      analyst: 'Security Analyst 04',
+      timestamp: '2026-03-05 09:45:00 UTC',
+      note: 'Triaged spike alert. High negative polarity and rapid cross-platform synchronization warrant full review.'
+    },
+    {
+      decision: 'Unreviewed',
+      analyst: 'System (Attention Engine)',
+      timestamp: '2026-03-05 09:30:00 UTC',
+      note: 'Automated threshold exceedance: EWMA growth surge +338%.'
     }
-  }, [activeAlertId]);
+  ]);
 
-  useEffect(() => {
-    async function loadLogs() {
-      try {
-        const res = await api.getInvestigations();
-        if (res && res.investigations) {
-          setInvestigations(res.investigations);
-          return;
-        }
-      } catch {
-        // Fallback demo audit history
-      }
-      setInvestigations([
-        {
-          investigation_id: 'inv-901',
-          alert_id: 'alert_cluster_top-01',
-          topic: 'Critical Grid Blackout Claims',
-          verdict: 'CONFIRMED_THREAT',
-          analyst: 'Officer Sharma (Cyber Forensics)',
-          notes: 'Multi-platform copypasta burst confirmed from 3 bot accounts. Disinformation vector targeting Sector 4 infrastructure.',
-          timestamp: '2026-03-05T09:45:00Z'
-        }
-      ]);
-    }
-    loadLogs();
-  }, []);
+  const alertData = {
+    id: alertId,
+    title: 'Critical Grid Blackout Claims',
+    attentionScore: 88.5,
+    threatLevel: 'CRITICAL',
+    reviewStatus: auditHistory[0]?.decision || 'Under Review',
+    evidenceRecordsCount: 184,
+    rationale: 'Multiple statistical indicators point to an orchestrated disinformation campaign: rapid synchronized relays across 3 platforms within 180 seconds, 4 duplicate copypasta variants, and verified SCADA operational telemetry demonstrating normal power station profiles.'
+  };
 
-  async function handleSubmitDecision(e) {
-    e.preventDefault();
-    if (!currentDossier) return;
-    setIsSubmitting(true);
-    setFeedbackMsg('');
-    try {
-      const res = await api.postInvestigation({
-        alert_id: currentDossier.alert_id,
-        topic: currentDossier.topic_label || currentDossier.topic || 'General Topic',
-        verdict: verdict,
-        analyst: 'Duty Intelligence Officer',
-        notes: analystNotes || `Adjudicated as ${verdict} with ${confidenceRating} confidence rating.`
-      });
-      setInvestigations([res.entry || {
-        investigation_id: `inv-${Date.now()}`,
-        alert_id: currentDossier.alert_id,
-        topic: currentDossier.topic_label || currentDossier.topic,
-        verdict: verdict,
-        analyst: 'Duty Intelligence Officer',
-        notes: analystNotes || `Adjudicated as ${verdict}.`,
-        timestamp: new Date().toISOString()
-      }, ...investigations]);
-      setFeedbackMsg('Verdict successfully committed to the tamper-evident audit ledger.');
-      setAnalystNotes('');
-    } catch (err) {
-      // Local demo fallback if backend DB is not configured
-      setInvestigations([{
-        investigation_id: `inv-${Date.now()}`,
-        alert_id: currentDossier.alert_id,
-        topic: currentDossier.topic_label || currentDossier.topic,
-        verdict: verdict,
-        analyst: 'Duty Intelligence Officer',
-        notes: analystNotes || `Adjudicated as ${verdict}.`,
-        timestamp: new Date().toISOString()
-      }, ...investigations]);
-      setFeedbackMsg('Verdict recorded in local analyst session ledger.');
-      setAnalystNotes('');
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+  const evidenceRecords = [
+    { source: 'tw-101 (disinfo_seed_01)', signal: 'Patient Zero Origin Post', time: '2026-03-05 08:00:00 UTC', excerpt: 'BREAKING: Critical security breach reported in central communications grid. Do not trust updates.' },
+    { source: 'tg-102 (amplifier_bot_99)', signal: 'Synchronized Telegram Relay', time: '2026-03-05 08:01:15 UTC', excerpt: 'Forwarded: Total grid collapse confirmed across Sector 4. Generators failing.' },
+    { source: 'tw-103 (bot_relay_44)', signal: 'Identical Copypasta Tweet', time: '2026-03-05 08:01:45 UTC', excerpt: 'BREAKING: Critical security breach reported in central communications grid. #Blackout' },
+    { source: 'rd-104 (citizen_observer)', signal: 'Ground-Truth Contradiction', time: '2026-03-05 08:15:00 UTC', excerpt: 'Local power is completely fine. Suspicious identical posts spreading on Twitter.' }
+  ];
+
+  const evidenceRows = evidenceRecords.map((ev, idx) => ({
+    cells: [
+      <span key="1"><code>{ev.source}</code></span>,
+      <span key="2" className="platform-pill">{ev.signal}</span>,
+      <span key="3">
+        <strong style={{ display: 'block', fontSize: '11px', color: '#64748b' }}>{ev.time}</strong>
+        "{ev.excerpt}"
+      </span>
+    ]
+  }));
+
+  const handleSaveDecision = () => {
+    // Optimistic concurrency check simulation
+    const nowIso = new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+    const newEntry = {
+      decision: decision,
+      analyst: analystName,
+      timestamp: nowIso,
+      note: notes
+    };
+
+    setAuditHistory([newEntry, ...auditHistory]);
+    setSaveStatus('Decision successfully recorded and committed to audit trail.');
+    setConcurrencyConflict(null);
+  };
+
+  const primaryContent = (
+    <div>
+      {/* Alert Rationale Panel */}
+      <div style={{ padding: '16px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+          <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            Alert Rationale & Threat Context
+          </span>
+          <span className="attention-badge critical">Attention: {alertData.attentionScore}/100</span>
+        </div>
+        <p style={{ margin: 0, fontSize: '13px', color: '#7f1d1d', lineHeight: 1.5 }}>
+          {alertData.rationale}
+        </p>
+      </div>
+
+      {/* Multi-Signal Evidence Timeline */}
+      <h4 className="section-headline" style={{ marginBottom: '12px' }}>Multi-Signal Evidence Timeline</h4>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginBottom: '16px' }}>
+        {/* Trend Evidence Card */}
+        <div style={{ padding: '12px', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: '6px' }}>
+          <strong style={{ fontSize: '12px', color: '#142838' }}>📈 Trend Evidence</strong>
+          <div style={{ fontSize: '18px', fontWeight: 700, color: '#b91c1c', margin: '4px 0' }}>+338% Surge</div>
+          <small style={{ color: '#64748b' }}>184 posts observed vs 42 baseline expected count in 2-hour window.</small>
+        </div>
+
+        {/* Sentiment Polarity Card */}
+        <div style={{ padding: '12px', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: '6px' }}>
+          <strong style={{ fontSize: '12px', color: '#142838' }}>🎯 Sentiment & Tone</strong>
+          <div style={{ fontSize: '18px', fontWeight: 700, color: '#b45309', margin: '4px 0' }}>88% Negative</div>
+          <small style={{ color: '#64748b' }}>Heavy alarmist panic markers across both English and Hindi text.</small>
+        </div>
+
+        {/* Audience Geographic Card */}
+        <div style={{ padding: '12px', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: '6px' }}>
+          <strong style={{ fontSize: '12px', color: '#142838' }}>👥 Audience Demographics</strong>
+          <div style={{ fontSize: '18px', fontWeight: 700, color: '#0369a1', margin: '4px 0' }}>Northern Grid Sector</div>
+          <small style={{ color: '#64748b' }}>80% of regional mentions geolocated to Sector 4 and NCR substations.</small>
+        </div>
+
+        {/* Network Topology Card */}
+        <div style={{ padding: '12px', background: '#ffffff', border: '1px solid var(--color-border)', borderRadius: '6px' }}>
+          <strong style={{ fontSize: '12px', color: '#142838' }}>🕸️ Network Topology</strong>
+          <div style={{ fontSize: '18px', fontWeight: 700, color: '#6d28d9', margin: '4px 0' }}>CIB Coordination: 0.86</div>
+          <small style={{ color: '#64748b' }}>3 bot accounts with identical copypasta within 90-second propagation window.</small>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <button
+          className="btn-primary btn-small"
+          onClick={() => onNavigate('/reports')}
+        >
+          Include In Intelligence Report Preview →
+        </button>
+        <button
+          className="btn-secondary btn-small"
+          onClick={() => onNavigate('/network')}
+        >
+          Inspect Network Topology →
+        </button>
+      </div>
+    </div>
+  );
+
+  const inspectorContent = (
+    <div className="inspector-panel">
+      <div className="section-headline-row">
+        <h4 className="section-headline">Decision panel</h4>
+      </div>
+      <p style={{ fontSize: '12px', color: '#64748b', margin: '0 0 8px 0' }}>
+        Record formal analyst adjudication and defensible rationale.
+      </p>
+
+      {saveStatus && (
+        <div style={{ padding: '8px 10px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '4px', fontSize: '12px', color: '#166534' }}>
+          ✓ {saveStatus}
+        </div>
+      )}
+
+      {concurrencyConflict && (
+        <div style={{ padding: '10px', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '4px', fontSize: '11.5px', color: '#92400e' }}>
+          <strong>Conflict Detected:</strong> A newer decision exists. Your draft notes have been preserved below.
+        </div>
+      )}
+
+      {/* Decision Selector */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <label style={{ fontSize: '11.5px', fontWeight: 600, color: '#475569', textTransform: 'uppercase' }}>Analyst Verdict</label>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+          {['Confirm', 'Reject', 'Investigate'].map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              className={`btn-toggle-view ${decision === opt ? 'active' : ''}`}
+              onClick={() => setDecision(opt)}
+              style={{ justifyContent: 'center', padding: '6px' }}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Analyst Name */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <label style={{ fontSize: '11.5px', fontWeight: 600, color: '#475569', textTransform: 'uppercase' }}>Analyst Identifier</label>
+        <input
+          type="text"
+          className="scope-input"
+          value={analystName}
+          onChange={(e) => setAnalystName(e.target.value)}
+        />
+      </div>
+
+      {/* Notes Field */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <label style={{ fontSize: '11.5px', fontWeight: 600, color: '#475569', textTransform: 'uppercase' }}>Adjudication Notes</label>
+        <textarea
+          rows={5}
+          className="scope-input"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Record justification, attribution evidence, and recommendations..."
+        />
+      </div>
+
+      <button
+        className="btn-primary"
+        onClick={handleSaveDecision}
+        style={{ width: '100%', justifyContent: 'center' }}
+      >
+        Save Decision & Update Audit History
+      </button>
+
+      {/* Audit History */}
+      <div style={{ marginTop: '16px' }}>
+        <strong style={{ fontSize: '11.5px', color: '#142838', textTransform: 'uppercase' }}>Audit History & Prior Decisions</strong>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+          {auditHistory.map((entry, idx) => (
+            <div key={idx} style={{ padding: '8px 10px', background: 'var(--color-bg-subtle)', borderRadius: '4px', border: '1px solid var(--color-border)', fontSize: '11.5px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
+                <span className={`badge-status ${entry.decision === 'Confirm' ? 'critical' : entry.decision === 'Reject' ? 'ready' : 'pending'}`}>
+                  {entry.decision.toUpperCase()}
+                </span>
+                <span style={{ color: '#64748b' }}>{entry.timestamp}</span>
+              </div>
+              <div style={{ color: '#1e293b', fontWeight: 500, margin: '3px 0' }}>By: {entry.analyst}</div>
+              <p style={{ margin: 0, color: '#475569', fontStyle: 'italic' }}>"{entry.note}"</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="page-investigation">
-      {/* Investigation Workbench Hero */}
-      <div className="investigation-hero">
-        <div>
-          <h2>Analyst Investigation & Attribution Workbench</h2>
-          <p className="subtitle">
-            Rigorous attribution workflow: Examine Patient Zero origin, compare contradictory signals, and record binding analyst decisions.
-          </p>
+    <div className="screen-container">
+      <header className="screen-header">
+        <div className="screen-route-meta">
+          <span className="route-pill">/investigations/:id</span>
+          <span className="section-kicker">Threat Operations</span>
         </div>
-        {currentDossier && (
-          <button
-            className="btn-primary"
-            onClick={() => onExportBrief && onExportBrief(currentDossier)}
-          >
-            📄 Export Formal Brief →
-          </button>
-        )}
-      </div>
+        <h1 className="screen-title">Investigation</h1>
+        <p className="screen-question">Does the evidence support the alert, and what should be recorded?</p>
+      </header>
 
-      <div className="investigation-layout">
-        {/* Left Column: Queued Surveillance Targets */}
-        <div className="investigation-left">
-          <article className="panel alert-selector-panel">
-            <div className="panel-header">
-              <h3>Dossiers Under Review</h3>
-              <span className="badge badge-amber">{alertList.length} QUEUED</span>
-            </div>
-            <div className="selector-list">
-              {alertList.map((a) => (
-                <div
-                  key={a.alert_id}
-                  className={`selector-item ${selectedAlertId === a.alert_id ? 'active' : ''}`}
-                  onClick={() => setSelectedAlertId(a.alert_id)}
-                >
-                  <div className="item-head">
-                    <strong>{a.topic_label || a.topic}</strong>
-                    <span className={`pill small ${a.threat_level?.toLowerCase()}`}>
-                      {a.threat_level}
-                    </span>
-                  </div>
-                  <small className="item-sub">
-                    Attention: <strong>{a.attention_score?.toFixed(1)}</strong>/100 · {a.analyzed_volume || 0} events
-                  </small>
-                </div>
-              ))}
-              {!alertList.length && (
-                <p className="muted" style={{ padding: '1rem' }}>No dossiers queued for investigation.</p>
-              )}
-            </div>
-          </article>
-
-          {/* Record Analyst Decision Studio */}
-          <article className="panel decision-panel">
-            <div className="panel-header">
-              <h3>Record Official Verdict</h3>
-              <span className="badge badge-purple">Human Adjudication</span>
-            </div>
-
-            <form onSubmit={handleSubmitDecision} className="decision-form">
-              <div className="form-group">
-                <label>Adjudication Verdict:</label>
-                <div className="verdict-options-grid">
-                  {[
-                    { id: 'CONFIRMED_THREAT', label: 'Confirmed Threat', color: 'rose' },
-                    { id: 'FALSE_POSITIVE', label: 'False Positive', color: 'emerald' },
-                    { id: 'MONITORING', label: 'Keep Monitoring', color: 'amber' },
-                    { id: 'ESCALATED_COMMAND', label: 'Escalate Command', color: 'purple' }
-                  ].map((v) => (
-                    <button
-                      type="button"
-                      key={v.id}
-                      className={`verdict-btn ${verdict === v.id ? 'active ' + v.color : ''}`}
-                      onClick={() => setVerdict(v.id)}
-                    >
-                      {v.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>Analyst Forensic Justification:</label>
-                <textarea
-                  rows="3"
-                  placeholder="Detail evidence rationale, identified threat actor, and recommended defensive countermeasures..."
-                  value={analystNotes}
-                  onChange={(e) => setAnalystNotes(e.target.value)}
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn-primary full-width"
-                disabled={isSubmitting || !currentDossier}
-              >
-                {isSubmitting ? 'Recording Verdict...' : 'Commit Verdict to Audit Ledger'}
-              </button>
-
-              {feedbackMsg && (
-                <div className="feedback-banner">
-                  ✓ {feedbackMsg}
-                </div>
-              )}
-            </form>
-          </article>
-        </div>
-
-        {/* Right Column: Evidence Examination & Signal Comparison */}
-        <div className="investigation-right">
-          {/* Signal Comparison / Contradiction Matrix */}
-          <article className="panel contradiction-panel">
-            <div className="panel-header">
-              <div>
-                <h3>Signal Comparison & Contradiction Matrix</h3>
-                <p className="panel-subtitle">Side-by-side reconciliation of viral claims vs verified state bulletins</p>
-              </div>
-              <span className="badge badge-rose">Contradiction Detected</span>
-            </div>
-
-            <div className="signal-comparison-grid">
-              <div className="signal-box claim-signal">
-                <div className="signal-head">
-                  <span className="pill small danger">UNVERIFIED CLAIM</span>
-                  <code>@disinfo_seed_01</code>
-                </div>
-                <blockquote className="signal-quote">
-                  "CRITICAL: Complete grid collapse confirmed across Sector 4. Do not trust official news. #Blackout"
-                </blockquote>
-                <div className="signal-meta">
-                  <span>🚨 Emotion: <strong>Panic / Fear (88%)</strong></span>
-                  <span>⚡ Platform: <strong>Twitter/X Mirror</strong></span>
-                </div>
-              </div>
-
-              <div className="signal-box official-signal">
-                <div className="signal-head">
-                  <span className="pill small success">VERIFIED COUNTER-SIGNAL</span>
-                  <code>@official_press</code>
-                </div>
-                <blockquote className="signal-quote">
-                  "Notice: All national grid substations are functioning normally under standard operating procedures. #FactCheck"
-                </blockquote>
-                <div className="signal-meta">
-                  <span>🛡 Sentiment: <strong>Neutral / Factual</strong></span>
-                  <span>🏛 Source: <strong>State Transmission Authority</strong></span>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          {/* Detailed Forensic Evidence Panel */}
-          {currentDossier ? (
-            <EvidencePanel dossier={currentDossier} />
-          ) : (
-            <div className="panel empty-state">
-              <p>Select a queued dossier on the left to examine technical evidence.</p>
-            </div>
-          )}
-
-          {/* Audit Ledger History */}
-          <article className="panel audit-log-panel">
-            <div className="panel-header">
-              <div>
-                <h3>Tamper-Evident Adjudication Audit Trail</h3>
-                <p className="panel-subtitle">Cryptographic log of all recorded officer decisions and verdicts</p>
-              </div>
-              <span className="badge badge-emerald">{investigations.length} DECISIONS</span>
-            </div>
-
-            <div className="audit-table-wrap">
-              <table className="tactical-table">
-                <thead>
-                  <tr>
-                    <th>Timestamp</th>
-                    <th>Target Alert</th>
-                    <th>Verdict</th>
-                    <th>Officer</th>
-                    <th>Forensic Rationale</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {investigations.map((inv, idx) => (
-                    <tr key={idx}>
-                      <td>
-                        <small>{inv.timestamp ? new Date(inv.timestamp).toLocaleString() : 'Just now'}</small>
-                      </td>
-                      <td>
-                        <strong>{inv.topic}</strong>
-                      </td>
-                      <td>
-                        <span className={`pill small ${inv.verdict === 'CONFIRMED_THREAT' ? 'danger' : inv.verdict === 'FALSE_POSITIVE' ? 'success' : 'warning'}`}>
-                          {inv.verdict?.replace(/_/g, ' ')}
-                        </span>
-                      </td>
-                      <td>
-                        <code>{inv.analyst}</code>
-                      </td>
-                      <td>
-                        <p className="audit-note-text">{inv.notes}</p>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </article>
-        </div>
-      </div>
+      <ScreenCard
+        scopeFilters={[`Alert: ${alertData.title}`, 'All Evidence Types', 'Audited Scope']}
+        metricCards={[
+          { label: 'Attention score', value: `${alertData.attentionScore}/100`, sub: `${alertData.threatLevel} Priority` },
+          { label: 'Evidence records', value: alertData.evidenceRecordsCount, sub: 'Corpus in alert cluster' },
+          { label: 'Review status', value: alertData.reviewStatus, sub: 'Audit-logged state' }
+        ]}
+        primaryContent={primaryContent}
+        inspectorContent={inspectorContent}
+        evidenceColumns={['Source record', 'Signal', 'Event time']}
+        evidenceRows={evidenceRows}
+        evidenceTitle="Supporting Evidence Records"
+      />
     </div>
   );
 }
